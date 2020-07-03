@@ -1,0 +1,37 @@
+{
+	"compilerOptions": {
+		"jsx": "react",
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": "source",
+		"composite": false,
+		"emitDecoratorMetadata": true,
+		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"module": "commonjs",
+		"outDir": "dist",
+		"paths": {
+			"~/*": [
+				"./*"
+			]
+		},
+		"pretty": true,
+		"rootDir": ".",
+		"target": "es2017",
+		"typeRoots": [
+			"./node_modules/@types",
+			"./src/@types"
+		],
+		"declaration": false,
+		"isolatedModules": false,
+		"useDefineForClassFields": true,
+		"skipLibCheck": true,
+	},
+	"exclude": [
+		"./node_modules/",
+		"./webpack.config.js",
+		"./dist/"
+	],
+	"include": [
+		"source",
+	]
+}
