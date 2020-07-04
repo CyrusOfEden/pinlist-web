@@ -1,0 +1,29 @@
+.spacing(@prop, @px) when (@px > 0) {
+  &-@{px} {
+    @prop: ~"@{px}px";
+  }
+  .spacing(@prop, floor(@px / 2));
+}
+
+@space-types: {
+  p: "padding";
+  m: "margin";
+};
+
+@space-directions: {
+  l: "left";
+  r: "right";
+  t: "top";
+  b: "bottom";
+};
+
+each(@space-types, .(@css-property, @prefix) {
+  .@{prefix} {
+    .spacing(@css-property, 64)
+  }
+  each(@space-directions, .(@direction, @suffix) {
+    .@{prefix}@{suffix} {
+      .spacing("@{css-property}-@{direction}", 64)
+    }
+  })
+});
