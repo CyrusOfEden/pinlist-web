@@ -20,7 +20,7 @@
     "http://*/*",
     "https://*/*"
   ],
-  "content_security_policy": "script-src 'self'; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://www.googletagmanager.com; object-src 'self'",
   "__chrome|firefox__author": "volume",
   "__opera__developer": {
     "name": "volume"
@@ -44,9 +44,9 @@
     "__chrome|opera__chrome_style": false,
     "__firefox__browser_style": false
   },
-  "__chrome|opera__options_page": "options.html",
+  "__chrome|opera__options_page": "app.html",
   "options_ui": {
-    "page": "options.html",
+    "page": "app.html",
     "open_in_tab": true,
     "__chrome__chrome_style": false
   },
@@ -54,7 +54,7 @@
     "scripts": [
       "dist/background.bundle.js"
     ],
-    "__chrome|opera__persistent": false
+    "__chrome|opera__persistent": true
   },
   "content_scripts": [
     {

@@ -6,6 +6,8 @@ import "firebase/analytics"
 
 import firebase from "firebase/app"
 
+export const client = firebase
+
 export const app = firebase.initializeApp({
   apiKey: "AIzaSyB2vs-ui9JDaWO3B5APk-B7mTgq3-1ajcU",
   authDomain: "volume-pinlist.firebaseapp.com",
@@ -28,5 +30,3 @@ export const configuration = ((config) => {
   return config
 })(firebase.remoteConfig())
 export const storage = firebase.storage()
-
-export { firebase }
