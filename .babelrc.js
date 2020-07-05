@@ -17,16 +17,6 @@ module.exports = {
     "@babel/react",
   ],
   plugins: [
-    [
-      "import",
-      { libraryName: "antd", libraryDirectory: "lib", style: true },
-      "antd",
-    ],
-    [
-      "import",
-      { libraryName: "antd-mobile", libraryDirectory: "lib", style: true },
-      "antd-mobile",
-    ],
     ["@babel/plugin-proposal-class-properties"],
     ["@babel/plugin-transform-destructuring", { useBuiltIns: true }],
     ["@babel/plugin-proposal-object-rest-spread", { useBuiltIns: true }],

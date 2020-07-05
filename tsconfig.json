@@ -30,8 +30,8 @@
     "src",
   ],
   "exclude": [
-    "node_modules/",
-    "webpack.config.js",
-    "dist/"
+    "./node_modules/",
+    "./webpack.config.js",
+    "./extension/"
   ]
 }
