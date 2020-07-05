@@ -1,7 +1,6 @@
 const fs = require("fs")
 const path = require("path")
 const webpack = require("webpack")
-const AntdDayJSWebpackPlugin = require("antd-dayjs-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const CopyWebpackPlugin = require("copy-webpack-plugin")
 const ExtensionReloader = require("webpack-extension-reloader")
@@ -13,7 +12,6 @@ const TypescriptConfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
 const WextManifestWebpackPlugin = require("wext-manifest-webpack-plugin")
 const ZipPlugin = require("zip-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const lessVarsToJs = require("less-vars-to-js")
 
 const env = process.env.NODE_ENV || "development"
 
@@ -38,10 +36,10 @@ module.exports = {
 
   entry: {
     manifest: path.join(sourcePath, "manifest.json"),
-    app: path.join(sourcePath, "App", "index.tsx"),
-    popup: path.join(sourcePath, "Popup", "index.tsx"),
-    background: path.join(sourcePath, "Background", "index.ts"),
-    contentScript: path.join(sourcePath, "ContentScript", "index.ts"),
+    app: path.join(sourcePath, "app", "index.tsx"),
+    popup: path.join(sourcePath, "popup", "index.tsx"),
+    background: path.join(sourcePath, "background", "index.ts"),
+    contentScript: path.join(sourcePath, "content-script", "index.ts"),
   },
 
   output: {
@@ -90,31 +88,14 @@ module.exports = {
             options: { sourceMap: true },
           },
           {
-            loader: "less-loader",
-            options: {
-              sourceMap: true,
-              lessOptions(loader) {
-                const themeFiles = ["colors.less", "theme.less"].map((f) =>
-                  path.resolve(__dirname, "src", "StyleSheets", f),
-                )
-
-                for (const file of themeFiles) {
-                  loader.addDependency(file)
-                }
-
-                const themeVars = themeFiles
-                  .map((f) => fs.readFileSync(f, "utf-8").toString())
-                  .map(lessVarsToJs)
-                  .reduce(Object.assign, {})
-
-                return {
-                  javascriptEnabled: true,
-                  modifyVars: themeVars,
-                }
-              },
-            },
+            loader: "sass-loader",
+            options: { sourceMap: true },
           },
         ],
+      },
+      {
+        test: /\.svg$/,
+        use: ["@svgr/webpack"],
       },
     ],
   },
@@ -145,13 +126,13 @@ module.exports = {
       cleanStaleWebpackAssets: false,
     }),
     new HtmlWebpackPlugin({
-      template: path.join(sourcePath, "App", "app.html"),
+      template: path.join(sourcePath, "app", "app.html"),
       inject: "body",
       chunks: ["app"],
       filename: "app.html",
     }),
     new HtmlWebpackPlugin({
-      template: path.join(sourcePath, "Popup", "popup.html"),
+      template: path.join(sourcePath, "popup", "popup.html"),
       inject: "body",
       chunks: ["popup"],
       filename: "popup.html",
@@ -160,15 +141,13 @@ module.exports = {
     new MiniCssExtractPlugin({ filename: "css/[name].css" }),
     // copy static assets
     new CopyWebpackPlugin([{ from: "assets", to: "assets" }]),
-    // Replace Moment.js with Day.js
-    new AntdDayJSWebpackPlugin(),
     // plugin to enable browser reloading in development mode
     env === "development"
       ? new ExtensionReloader({
           port: 9090,
           reloadPage: true,
           entries: {
-            contentScript: "contentScript",
+            contentScript: "content-script",
             background: "background",
             extensionPage: ["app", "popup"],
           },
