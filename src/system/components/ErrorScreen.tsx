@@ -1,7 +1,6 @@
-import { RouteComponentProps } from "@reach/router"
 import React from "react"
 
-interface ErrorProps extends RouteComponentProps {
+interface ErrorProps {
   error: Pick<Error, "message">
   message?: string
 }

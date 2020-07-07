@@ -13,8 +13,8 @@ module.exports = {
         },
       },
     ],
-    "@babel/typescript",
-    "@babel/react",
+    "@babel/preset-typescript",
+    "@babel/preset-react",
   ],
   plugins: [
     ["@babel/plugin-proposal-class-properties"],
