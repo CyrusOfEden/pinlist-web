@@ -1,12 +1,13 @@
 import { Global, css } from "@emotion/core"
 import { useBoolean } from "@umijs/hooks"
-import { useDelay } from "~/system/hooks/useDelay"
-import { theme } from "~/system/theme"
 import classNames from "classnames"
 import React from "react"
 
-export const Hello: React.FC = () => {
-  const { state, setTrue } = useBoolean(false)
+import { useDelay } from "../hooks/useDelay"
+import theme from "../theme"
+
+export const Hello: React.FC<{ animate?: boolean }> = ({ animate = true }) => {
+  const { state, setTrue } = useBoolean(!animate)
   useDelay(setTrue, 50, [])
 
   return (
@@ -69,21 +70,21 @@ const StyleSheet: React.FC = () => (
         .path-1 {
           stroke-dasharray: 1850 2000;
           stroke-dashoffset: 1851;
-          transition: 2s linear;
+          transition: 2s ease-in;
         }
         .path-2 {
           stroke-dasharray: 260 1000;
           stroke-dashoffset: 261;
-          transition: 0.5s linear 2s;
+          transition: 0.35s ease-out 2s;
         }
         .path-3 {
           stroke-dasharray: 100 1000;
           stroke-dashoffset: 101;
-          transition: 0.35s linear 2.5s;
+          transition: 0.35s linear 2.35s;
         }
         .path-4 {
           stroke-width: 0;
-          transition: 0.2s linear 2.85s;
+          transition: 0.2s linear 2.7s;
         }
       }
     `}

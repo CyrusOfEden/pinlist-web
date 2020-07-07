@@ -1,4 +1,7 @@
+import { theme } from "@chakra-ui/core"
+
 export default {
+  ...theme.colors,
   black: "#111",
   gold: {
     50: "#fff2dc",

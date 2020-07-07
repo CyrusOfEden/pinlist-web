@@ -1,6 +1,7 @@
 import { Global, css } from "@emotion/core"
-import { theme } from "~/system/theme"
 import React from "react"
+
+import theme from "../theme"
 
 export const RainBros: React.FC = () => (
   <figure id="RainBros">

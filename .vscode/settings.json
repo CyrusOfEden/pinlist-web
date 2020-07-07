@@ -1,13 +1,16 @@
 {
   "files.exclude": {
-    "**/.git": true,
-    "**/.svn": true,
-    "**/.hg": true,
-    "**/CVS": true,
+    ".*cache": true,
     "**/.DS_Store": true,
-    "node_modules/": true,
+    "**/.git": true,
+    "**/.hg": true,
+    "**/.svn": true,
+    "**/CVS": true,
+    "dist/": true,
+    "web/": true,
     "extension/": true,
-    "yarn.lock": true,
-    ".eslintcache": true
-  }
+    "node_modules/": true,
+    "yarn.lock": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

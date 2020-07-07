@@ -36,7 +36,7 @@ module.exports = {
 
   entry: {
     manifest: path.join(sourcePath, "manifest.json"),
-    app: path.join(sourcePath, "app", "index.tsx"),
+    // app: path.join(sourcePath, "app", "index.tsx"),
     popup: path.join(sourcePath, "popup", "index.tsx"),
     background: path.join(sourcePath, "background", "index.ts"),
     contentScript: path.join(sourcePath, "content-script", "index.ts"),
@@ -125,14 +125,14 @@ module.exports = {
       ],
       cleanStaleWebpackAssets: false,
     }),
+    // new HtmlWebpackPlugin({
+    //   template: path.join(sourcePath, "app.html"),
+    //   inject: "body",
+    //   chunks: ["app"],
+    //   filename: "app.html",
+    // }),
     new HtmlWebpackPlugin({
-      template: path.join(sourcePath, "app", "app.html"),
-      inject: "body",
-      chunks: ["app"],
-      filename: "app.html",
-    }),
-    new HtmlWebpackPlugin({
-      template: path.join(sourcePath, "popup", "popup.html"),
+      template: path.join(sourcePath, "popup.html"),
       inject: "body",
       chunks: ["popup"],
       filename: "popup.html",
@@ -149,7 +149,8 @@ module.exports = {
           entries: {
             contentScript: "content-script",
             background: "background",
-            extensionPage: ["app", "popup"],
+            extensionPage: ["popup"],
+            // extensionPage: ["app", "popup"],
           },
         })
       : { apply() {} },
