@@ -9,7 +9,6 @@ const GlobalStyles = () => (
     styles={{
       body: {
         background: theme.colors.peach[50],
-        overflow: "hidden",
       },
     }}
   />

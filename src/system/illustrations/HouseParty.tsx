@@ -1,31 +1,27 @@
 import styled from "@emotion/styled"
-
-import theme from "../theme"
-import Image from "./source/HouseParty.svg"
-
-const { colors } = theme
+import Image from "~/assets/illustrations/HouseParty.svg"
 
 const HouseParty = styled(Image)`
   .a {
     fill: none;
   }
   .b {
-    fill: ${colors.green.base};
+    fill: ${({ theme }) => theme.colors.green.base};
   }
   .c,
   .e {
-    fill: ${colors.gold.base};
+    fill: ${({ theme }) => theme.colors.gold.base};
   }
   .d,
   .h {
-    fill: ${colors.peach.base};
+    fill: ${({ theme }) => theme.colors.peach.base};
   }
   .f {
-    fill: ${colors.white};
+    fill: ${({ theme }) => theme.colors.white};
   }
   .g,
   .i {
-    fill: ${colors.pink.base};
+    fill: ${({ theme }) => theme.colors.pink.base};
   }
 `
 

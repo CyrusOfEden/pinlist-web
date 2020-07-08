@@ -1,0 +1,65 @@
+{
+  "env": {
+    "browser": true,
+    "es2017": true,
+    "webextensions": true
+  },
+  "extends": [
+    "plugin:@typescript-eslint/eslint-recommended",
+    "prettier",
+    "prettier/@typescript-eslint"
+  ],
+  "ignorePatterns": [
+    "dist/",
+    "web/",
+    "extension/"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "project": "./tsconfig.json",
+    "sourceType": "module"
+  },
+  "rules": {
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/consistent-type-assertions": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-base-to-string": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "no-unused-expressions": "off",
+    "no-return-await": "off",
+    "quotes": [
+      "error",
+      "double",
+      {
+        "allowTemplateLiterals": true,
+        "avoidEscape": true,
+      }
+    ],
+    "semi": "off",
+    "space-before-function-paren": [
+      "error",
+      {
+        "anonymous": "never",
+        "asyncArrow": "always",
+        "named": "never"
+      }
+    ],
+    "spaced-comment": [
+      "error",
+      "always",
+      {
+        "markers": [
+          "#"
+        ]
+      }
+    ]
+  }
+}

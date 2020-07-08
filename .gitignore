@@ -93,6 +93,7 @@ public/
 ## Build directory
 extension/
 dist/
+web/
 .awcache
 
 # yarn 2
