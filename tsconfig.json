@@ -17,22 +17,23 @@
     "pretty": true,
     "rootDir": ".",
     "target": "es5",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/@types"
-    ],
     "declaration": false,
     "isolatedModules": false,
     "useDefineForClassFields": true,
     "skipLibCheck": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types"
+    ],
   },
   "include": [
-    "src/",
+    "./src/"
   ],
   "exclude": [
     "./dist/",
     "./extension/",
     "./node_modules/",
-    "./webpack.config.js"
+    "./web/",
+    "webpack.config.ts"
   ]
 }
