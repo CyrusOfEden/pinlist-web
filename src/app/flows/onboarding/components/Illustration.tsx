@@ -1,5 +1,5 @@
-import HouseParty from "~/src/system/illustrations/HouseParty"
-import * as Motion from "~/src/system/Motion"
+import HouseParty from "~/src/@design/illustrations/HouseParty"
+import * as Motion from "~/src/@design/Motion"
 import { Variants } from "framer-motion"
 import React from "react"
 import { useLocation } from "react-router-dom"

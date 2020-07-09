@@ -1,7 +1,7 @@
 import { Global, css } from "@emotion/core"
 import React from "react"
 
-import theme from "../theme"
+import colors from "../colors"
 
 export const RainBros: React.FC = () => (
   <figure id="RainBros">
@@ -231,21 +231,21 @@ const StyleSheet: React.FC = () => (
           0% {
             opacity: 0;
             transform: translateX(0px) scale(0);
-            background-color: ${theme.colors.blue[100]};
+            background-color: ${colors.blue[100]};
           }
           75% {
             opacity: 0.8;
             transform: translateX(0px) scale(0);
-            background-color: ${theme.colors.blue[500]};
+            background-color: ${colors.blue[500]};
           }
           81.25% {
-            background-color: ${theme.colors.blue[400]};
+            background-color: ${colors.blue[400]};
           }
           87.5% {
-            background-color: ${theme.colors.blue[300]};
+            background-color: ${colors.blue[300]};
           }
           93.75% {
-            background-color: ${theme.colors.blue[100]};
+            background-color: ${colors.blue[100]};
           }
           100% {
             transform: translateX(-254px) scale(1);
@@ -282,7 +282,7 @@ const StyleSheet: React.FC = () => (
           .circle-top {
             width: 264px;
             height: 264px;
-            border: 11px solid ${theme.colors.gold[100]};
+            border: 11px solid ${colors.gold[100]};
             margin-left: -10px;
           }
           .circles {
@@ -296,7 +296,7 @@ const StyleSheet: React.FC = () => (
           .circle-top {
             width: 200px;
             height: 200px;
-            border: 10px solid ${theme.colors.pink[50]};
+            border: 10px solid ${colors.pink[50]};
             margin-left: -10px;
           }
           .circles {
@@ -310,7 +310,7 @@ const StyleSheet: React.FC = () => (
           .circle-top {
             width: 140px;
             height: 140px;
-            border: 10px solid ${theme.colors.green[200]};
+            border: 10px solid ${colors.green[200]};
             margin-left: -10px;
           }
           .circles {
@@ -324,7 +324,7 @@ const StyleSheet: React.FC = () => (
           .circle-top {
             width: 70px;
             height: 70px;
-            border: 8px solid ${theme.colors.blue[100]};
+            border: 8px solid ${colors.blue[100]};
             margin-left: -8px;
           }
           .circles {
@@ -335,7 +335,7 @@ const StyleSheet: React.FC = () => (
         }
         .hexagon {
           position: absolute;
-          background-color: ${theme.colors.gold.base};
+          background-color: ${colors.gold.base};
           text-align: center;
           top: 263px;
           left: 594px;
@@ -399,7 +399,7 @@ const StyleSheet: React.FC = () => (
           position: absolute;
           width: 27px;
           height: 23px;
-          background-color: ${theme.colors.pink.base};
+          background-color: ${colors.pink.base};
           z-index: 0;
           animation-duration: 1.44s;
           animation-name: updownO;
@@ -456,7 +456,7 @@ const StyleSheet: React.FC = () => (
           top: 302px;
           width: 26px;
           height: 20px;
-          background: ${theme.colors.green.base};
+          background: ${colors.green.base};
           animation-duration: 0.48s;
           animation-name: updownG;
           .face {
@@ -487,7 +487,7 @@ const StyleSheet: React.FC = () => (
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            background: ${theme.colors.blue.base};
+            background: ${colors.blue.base};
             animation-duration: 0.24s;
             animation-name: updownB;
           }

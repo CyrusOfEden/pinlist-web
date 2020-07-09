@@ -5,9 +5,7 @@ interface ErrorProps {
   message?: string
 }
 
-export default function ErrorScreen({
+export const ErrorScreen: React.FC<ErrorProps> = ({
   error,
   message = error.message,
-}: ErrorProps) {
-  return <>{message}</>
-}
+}: ErrorProps) => <>{message}</>

@@ -5,14 +5,14 @@ import {
   Input,
   Stack,
 } from "@chakra-ui/core"
-import { useFormField } from "~/src/system/hooks/useFormField"
-import * as Motion from "~/src/system/Motion"
+import * as Motion from "~/src/@design/Motion"
+import { useFormField } from "~/src/@hooks/useFormField"
 import React from "react"
 
 import { WindupFormLabel } from "./WindupFormLabel"
 
-export const DisplayNameField = ({ form, isCurrentStep, ...delegated }) => {
-  const { error } = useFormField(form, "displayName")
+export const UsernameField = ({ form, isCurrentStep, ...delegated }) => {
+  const { error } = useFormField(form, "username")
 
   return (
     <Motion.Box {...delegated}>
@@ -21,8 +21,8 @@ export const DisplayNameField = ({ form, isCurrentStep, ...delegated }) => {
         <FormControl isInvalid={error} w="100%">
           <Input
             type="text"
-            name="displayName"
-            id="displayName"
+            name="username"
+            id="username"
             placeholder="Something Unique"
             borderColor="transparent"
             focusBorderColor="gold.500"

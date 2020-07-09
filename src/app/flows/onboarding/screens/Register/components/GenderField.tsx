@@ -1,5 +1,5 @@
 import { Button, FormControl, Radio, RadioGroup, Stack } from "@chakra-ui/core"
-import * as Motion from "~/src/system/Motion"
+import * as Motion from "~/src/@design/Motion"
 import React from "react"
 
 import { WindupFormLabel } from "./WindupFormLabel"

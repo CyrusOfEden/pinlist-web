@@ -1,13 +1,13 @@
 import { Global, css } from "@emotion/core"
-import { useBoolean } from "@umijs/hooks"
+import { useDelay } from "~/src/@hooks/useDelay"
+import { useBoolean } from "ahooks"
 import classNames from "classnames"
 import React from "react"
 
-import { useDelay } from "../hooks/useDelay"
-import theme from "../theme"
+import colors from "../colors"
 
 export const Hello: React.FC<{ animate?: boolean }> = ({ animate = true }) => {
-  const { state, setTrue } = useBoolean(!animate)
+  const [state, { setTrue }] = useBoolean(!animate)
   useDelay(setTrue, 50, [])
 
   return (
@@ -62,7 +62,7 @@ const StyleSheet: React.FC = () => (
         }
         .path {
           fill: none;
-          stroke: ${theme.colors.gold.base};
+          stroke: ${colors.gold.base};
           stroke-width: 18px;
           stroke-linecap: round;
           stroke-linejoin: round;

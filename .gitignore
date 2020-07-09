@@ -61,8 +61,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
-.env.test
+.env*
 
 # next.js build output
 .next
@@ -91,10 +90,7 @@ public/
 *.scss.map
 
 ## Build directory
-extension/
 dist/
-web/
-.awcache
 
 # yarn 2
 # https://github.com/yarnpkg/berry/issues/454#issuecomment-530312089
