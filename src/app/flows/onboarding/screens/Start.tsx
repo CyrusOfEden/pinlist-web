@@ -1,10 +1,10 @@
 import { Box, Heading, Stack, Text } from "@chakra-ui/core"
-import { Hello } from "~/src/system/animations/Hello"
-import Sparkles from "~/src/system/animations/Sparkles"
-import colors from "~/src/system/colors"
-import Hover from "~/src/system/components/Hover"
-import * as Motion from "~/src/system/Motion"
-import { ButtonLink } from "~/src/system/Router"
+import Hover from "~/src/@components/Hover"
+import { Hello } from "~/src/@design/animations/Hello"
+import Sparkles from "~/src/@design/animations/Sparkles"
+import colors from "~/src/@design/colors"
+import * as Motion from "~/src/@design/Motion"
+import { ButtonLink } from "~/src/@design/Router"
 import { Variants } from "framer-motion"
 import React from "react"
 
@@ -37,7 +37,7 @@ export const Start = () => {
       >
         <Motion.Box variants={motion}>
           <Heading as="h1" size="2xl">
-            Welcome to Pinlist!
+            Welcome to Joyful!
           </Heading>
         </Motion.Box>
         <Motion.Box variants={motion}>

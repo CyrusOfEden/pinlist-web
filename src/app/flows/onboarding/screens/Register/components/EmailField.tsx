@@ -5,8 +5,8 @@ import {
   Input,
   Stack,
 } from "@chakra-ui/core"
-import { useFormField } from "~/src/system/hooks/useFormField"
-import * as Motion from "~/src/system/Motion"
+import * as Motion from "~/src/@design/Motion"
+import { useFormField } from "~/src/@hooks/useFormField"
 import React from "react"
 
 import { WindupFormLabel } from "./WindupFormLabel"

@@ -1,16 +1,19 @@
 import { Heading, Input } from "@chakra-ui/core"
-import * as firebase from "~/src/services/firebase"
-import { useFormStep } from "~/src/system/hooks/useFormStep"
-import * as Motion from "~/src/system/Motion"
+import * as Motion from "~/src/@design/Motion"
+import { useFormStep } from "~/src/@hooks/useFormStep"
+import { useSession } from "~/src/@services/ApplicationSession"
+import { analytics } from "~/src/@services/firebase"
 import { Variants } from "framer-motion"
+import _ from "lodash"
+import capitalize from "lodash/capitalize"
 import React from "react"
-import { useAuthState } from "react-firebase-hooks/auth"
 import { useForm } from "react-hook-form"
 
+import { CurrentUser } from "../../../../../@services/ApplicationSession"
 import { AvatarField } from "./components/AvatarField"
-import { DisplayNameField } from "./components/DisplayNameField"
 import { EmailField } from "./components/EmailField"
 import { GenderField } from "./components/GenderField"
+import { UsernameField } from "./components/UsernameField"
 
 export const Register = () => (
   <Motion.Stack
@@ -25,17 +28,57 @@ export const Register = () => (
     }}
   >
     <Heading size="xl" fontStyle="italic">
-      Register for Pinlist
+      Register for Joyful
     </Heading>
     <RegistrationForm />
   </Motion.Stack>
 )
 
 const RegistrationForm = () => {
-  const [user, loading] = useAuthState(firebase.auth)
-  if (loading) return null
+  const { firebaseUser, setCurrentUser, api } = useSession()
 
-  const form = useForm({ mode: "onSubmit", initialValues: { step: 0 } })
+  const form = useForm<FormValues>({ mode: "onSubmit", defaultValues })
+  const step = useFormStep(form)
+  const isLastStep = step === 3
+
+  const onSubmit = async (values: FormValues) => {
+    if (!isLastStep) {
+      return form.setValue("step", step + 1)
+    }
+
+    // Create the Rails user
+    const { email, gender, username, photoUrl } = values
+    const { phoneNumber } = firebaseUser
+
+    const { data } = await api.post("/users", {
+      user: { username, email, phoneNumber, gender, photoUrl },
+    })
+
+    if (data.errors == null) {
+      // Update Firebase
+      await Promise.all([
+        firebaseUser.updateEmail(email),
+        firebaseUser.updateProfile({
+          displayName: username,
+          photoURL: photoUrl,
+        }),
+        analytics.setUserProperties({ gender }),
+      ])
+
+      // Update the ApplicationSession
+      const { user } = data
+      setCurrentUser(user)
+    } else {
+      // Set the errors
+      for (const [field, reasons] of Object.entries(data.errors)) {
+        const [reason] = reasons as string[]
+        form.setError(field as keyof FormValues, {
+          message: capitalize(`${field} ${reason}.`),
+          type: "manual",
+        })
+      }
+    }
+  }
 
   const motion: Variants = {
     initial: {
@@ -50,22 +93,6 @@ const RegistrationForm = () => {
         type: "spring",
       },
     },
-  }
-
-  const step = useFormStep(form)
-  const isLastStep = step === 3
-
-  const onSubmit = async (values) => {
-    if (!isLastStep) {
-      return form.setValue("step", step + 1)
-    }
-
-    const { email, gender, displayName, photoURL } = values
-    await Promise.all([
-      user.updateEmail(email.trim()),
-      user.updateProfile({ displayName, photoURL }),
-      firebase.analytics.setUserProperties({ gender }),
-    ])
   }
 
   return (
@@ -87,7 +114,7 @@ const RegistrationForm = () => {
       )}
 
       {step >= 2 && (
-        <DisplayNameField
+        <UsernameField
           form={form}
           isCurrentStep={step === 2}
           variants={motion}
@@ -99,4 +126,14 @@ const RegistrationForm = () => {
       )}
     </Motion.Stack>
   )
+}
+
+type FormValues = Omit<CurrentUser, "phoneNumber"> & { step: number }
+
+const defaultValues: FormValues = {
+  step: 0,
+  email: "",
+  gender: "",
+  username: "",
+  photoUrl: "",
 }

@@ -1,5 +1,5 @@
-import * as firebase from "~/src/services/firebase"
-import * as Motion from "~/src/system/Motion"
+import * as Motion from "~/src/@design/Motion"
+import { auth, client } from "~/src/@services/firebase"
 import React from "react"
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth"
 import { useHistory } from "react-router-dom"
@@ -18,21 +18,18 @@ export const Login = () => {
       }}
     >
       <StyledFirebaseAuth
-        firebaseAuth={firebase.auth}
+        firebaseAuth={auth}
         uiConfig={{
           signInFlow: "popup",
-          signInOptions: [firebase.client.auth.PhoneAuthProvider.PROVIDER_ID],
+          signInOptions: [client.auth.PhoneAuthProvider.PROVIDER_ID],
           callbacks: {
             async signInFailure(error) {
               debugger
             },
             uiShown() {},
             signInSuccessWithAuthResult({ additionalUserInfo: { isNewUser } }) {
-              if (isNewUser) {
-                history.push("/register")
-              } else {
-                history.push("/connect")
-              }
+              history.push("/register")
+              return false
             },
           },
         }}
