@@ -1,42 +1,49 @@
 import { Box } from "@chakra-ui/core"
-import * as Motion from "~/src/@design/Motion"
-import { Route, Switch } from "~/src/@design/Router"
-import { useSession } from "~/src/@services/ApplicationSession"
+import * as Motion from "~/src/@components/Motion"
+import { Route, Switch } from "~/src/@services/Router"
+import { useSession } from "~/src/@services/Session"
+import { SessionState } from "~/src/@services/Session"
 import React from "react"
-import { BrowserRouter, Redirect } from "react-router-dom"
+import { Redirect } from "react-router-dom"
 
 import { Illustration } from "./components/Illustration"
 import { Login } from "./screens/Login"
 import { Register } from "./screens/Register/Register"
 import { Start } from "./screens/Start"
 
-export const isDoneOnboarding = (user: firebase.User) =>
-  user && ["email", "displayName", "photoUrl"].every((field) => !!user[field])
+export const isLoggedIn = ({
+  firebaseUser,
+}: Pick<SessionState, "firebaseUser">) => !!firebaseUser
+
+export const isDoneOnboarding = ({
+  firebaseUser,
+  currentUser,
+}: Pick<SessionState, "firebaseUser" | "currentUser">) =>
+  !!firebaseUser &&
+  currentUser?.email &&
+  currentUser?.username &&
+  currentUser?.photoUrl
 
 export const Onboarding = () => {
-  const { firebaseUser } = useSession()
+  const session = useSession()
 
   return (
     <Motion.Flex w="100%" justify="space-around">
-      <BrowserRouter basename="/onboarding">
-        <Box w={[420, 420, 560]}>
+      <Box w={[420, 420, 560]} mt={16}>
+        {isLoggedIn(session) ? (
           <Switch>
-            {firebaseUser ? (
-              <>
-                <Route path="/register" component={Register} />
-                <Redirect from="/onboarding" to="/register" />
-              </>
-            ) : (
-              <>
-                <Route path="/start" component={Start} />
-                <Route path="/login" component={Login} />
-                <Redirect from="/onboarding" to="/start" />
-              </>
-            )}
+            <Route path="/register" component={Register} />
+            <Redirect from="/" to="/register" />
           </Switch>
-        </Box>
-        <Illustration w={[280, 360, 420]} mt={12} />
-      </BrowserRouter>
+        ) : (
+          <Switch>
+            <Route path="/start" component={Start} />
+            <Route path="/login" component={Login} />
+            <Redirect from="/" to="/start" />
+          </Switch>
+        )}
+      </Box>
+      <Illustration w={[280, 360, 420]} mt={12} />
     </Motion.Flex>
   )
 }

@@ -1,29 +1,28 @@
 import { Heading, Input } from "@chakra-ui/core"
-import * as Motion from "~/src/@design/Motion"
+import * as Motion from "~/src/@components/Motion"
 import { useFormStep } from "~/src/@hooks/useFormStep"
-import { useSession } from "~/src/@services/ApplicationSession"
-import { analytics } from "~/src/@services/firebase"
+import { useSession } from "~/src/@services/Session"
+import { CurrentUser } from "~/src/@services/Session"
 import { Variants } from "framer-motion"
-import _ from "lodash"
 import capitalize from "lodash/capitalize"
 import React from "react"
 import { useForm } from "react-hook-form"
 
-import { CurrentUser } from "../../../../../@services/ApplicationSession"
 import { AvatarField } from "./components/AvatarField"
 import { EmailField } from "./components/EmailField"
 import { GenderField } from "./components/GenderField"
 import { UsernameField } from "./components/UsernameField"
+import { createUser } from "./createUser"
 
 export const Register = () => (
   <Motion.Stack
     w={420}
     color="gold.700"
     spacing={8}
-    initial="initial"
+    initial="mount"
     animate="enter"
     variants={{
-      initial: { opacity: 0, y: 50, transition: { type: "spring" } },
+      mount: { opacity: 0, y: 50, transition: { type: "spring" } },
       enter: { opacity: 1, y: 0, transition: { type: "spring" } },
     }}
   >
@@ -35,9 +34,19 @@ export const Register = () => (
 )
 
 const RegistrationForm = () => {
-  const { firebaseUser, setCurrentUser, api } = useSession()
+  const session = useSession()
 
-  const form = useForm<FormValues>({ mode: "onSubmit", defaultValues })
+  type FormValues = Omit<CurrentUser, "phoneNumber"> & { step: number }
+  const form = useForm<FormValues>({
+    mode: "onSubmit",
+    defaultValues: {
+      step: 0,
+      email: "",
+      gender: "",
+      username: "",
+      photoUrl: "",
+    },
+  })
   const step = useFormStep(form)
   const isLastStep = step === 3
 
@@ -46,32 +55,13 @@ const RegistrationForm = () => {
       return form.setValue("step", step + 1)
     }
 
-    // Create the Rails user
-    const { email, gender, username, photoUrl } = values
-    const { phoneNumber } = firebaseUser
-
-    const { data } = await api.post("/users", {
-      user: { username, email, phoneNumber, gender, photoUrl },
-    })
-
-    if (data.errors == null) {
-      // Update Firebase
-      await Promise.all([
-        firebaseUser.updateEmail(email),
-        firebaseUser.updateProfile({
-          displayName: username,
-          photoURL: photoUrl,
-        }),
-        analytics.setUserProperties({ gender }),
-      ])
-
-      // Update the ApplicationSession
-      const { user } = data
-      setCurrentUser(user)
-    } else {
-      // Set the errors
-      for (const [field, reasons] of Object.entries(data.errors)) {
-        const [reason] = reasons as string[]
+    try {
+      const user = await createUser(session, values)
+      debugger
+      session.setState({ currentUser: user })
+    } catch (errors) {
+      debugger
+      for (const [field, reason] of errors) {
         form.setError(field as keyof FormValues, {
           message: capitalize(`${field} ${reason}.`),
           type: "manual",
@@ -81,7 +71,7 @@ const RegistrationForm = () => {
   }
 
   const motion: Variants = {
-    initial: {
+    mount: {
       opacity: 0,
       y: 20,
     },
@@ -100,7 +90,7 @@ const RegistrationForm = () => {
       spacing={8}
       as="form"
       onSubmit={form.handleSubmit(onSubmit)}
-      initial="initial"
+      initial="mount"
       animate="enter"
     >
       <Input hidden name="step" ref={form.register()} />
@@ -126,14 +116,4 @@ const RegistrationForm = () => {
       )}
     </Motion.Stack>
   )
-}
-
-type FormValues = Omit<CurrentUser, "phoneNumber"> & { step: number }
-
-const defaultValues: FormValues = {
-  step: 0,
-  email: "",
-  gender: "",
-  username: "",
-  photoUrl: "",
 }

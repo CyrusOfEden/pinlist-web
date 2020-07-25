@@ -21,7 +21,8 @@
     },
     "pretty": true,
     "rootDir": ".",
-    "target": "es5",
+    "skipLibCheck": true,
+    "target": "es2017",
     "typeRoots": [
       "node_modules/@types",
       "src/@types"
@@ -30,12 +31,11 @@
   },
   "exclude": [
     ".*cache",
-    ".vscode",
-    "dist",
-    "node_modules/",
+    "./dist/",
+    "./node_modules/",
   ],
   "include": [
-    "src",
-    "webpack.config.ts"
+    "./src/",
+    "./webpack.config.js"
   ]
 }

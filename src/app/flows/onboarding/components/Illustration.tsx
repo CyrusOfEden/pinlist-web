@@ -1,5 +1,5 @@
+import * as Motion from "~/src/@components/Motion"
 import HouseParty from "~/src/@design/illustrations/HouseParty"
-import * as Motion from "~/src/@design/Motion"
 import { Variants } from "framer-motion"
 import React from "react"
 import { useLocation } from "react-router-dom"
@@ -8,7 +8,7 @@ export const Illustration = (delegated) => {
   const { pathname } = useLocation()
 
   const motion: Variants = {
-    initial: {
+    mount: {
       opacity: 0,
       scale: 0,
       y: 50,
@@ -29,7 +29,7 @@ export const Illustration = (delegated) => {
     <Motion.Box
       {...delegated}
       variants={motion}
-      initial="initial"
+      initial="mount"
       animate="enter"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 1 }}

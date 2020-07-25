@@ -9,8 +9,9 @@
     "dist/": true,
     "web/": true,
     "extension/": true,
-    "node_modules/": true,
-    "yarn.lock": true
+    "**/node_modules/": true,
+    "yarn.lock": true,
+    "functions/lib": true
   },
   "typescript.tsdk": "node_modules/typescript/lib"
 }

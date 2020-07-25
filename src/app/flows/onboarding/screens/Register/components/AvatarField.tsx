@@ -7,13 +7,13 @@ import {
   Input,
   Stack,
 } from "@chakra-ui/core"
-import * as Motion from "~/src/@design/Motion"
+import * as Motion from "~/src/@components/Motion"
 import { useFormField } from "~/src/@hooks/useFormField"
-import * as firebase from "~/src/@services/firebase"
+import { storage } from "~/src/@services/Firebase"
 import React, { useRef, useState } from "react"
 import FileUploader from "react-firebase-file-uploader"
 
-import { WindupFormLabel } from "./WindupFormLabel"
+import { WindupFieldHeader } from "./WindupFieldHeader"
 
 type PhotoUploadState =
   | { state: "mounted" }
@@ -40,11 +40,11 @@ export const AvatarField = ({ form, isCurrentStep, ...delegated }) => {
   const openFilepicker = () => label.current.click()
 
   // Uploader Options
-  const storage = firebase.storage.ref("avatars")
+  const storageRef = storage.ref("avatars")
   const uploadStarted = () => setState({ state: "inProgress" })
   const uploadError = (error: Error) => setState({ state: "error", error })
   const uploadSuccess = async (filename: string) => {
-    const photoUrl = await storage.child(filename).getDownloadURL()
+    const photoUrl = await storageRef.child(filename).getDownloadURL()
     setState({ state: "complete", photoUrl })
     form.setValue("photoUrl", photoUrl)
   }
@@ -53,7 +53,10 @@ export const AvatarField = ({ form, isCurrentStep, ...delegated }) => {
 
   return (
     <Motion.Box {...delegated}>
-      <WindupFormLabel title="Great! Now how about an avatar?" />
+      <WindupFieldHeader
+        title="Great! Now how about an avatar?"
+        earnedPoints={upload.is("complete") ? 250 : 0}
+      />
       <FormControl isInvalid={error}>
         <Input
           type="hidden"
@@ -87,10 +90,11 @@ export const AvatarField = ({ form, isCurrentStep, ...delegated }) => {
               name="avatar"
               accept="image/*"
               randomizeFilename
-              storageRef={storage}
+              storageRef={storageRef}
               onUploadStart={uploadStarted}
               onUploadError={uploadError}
               onUploadSuccess={uploadSuccess}
+              metadata={{ cacheControl: "max-age=31536000, public" }}
             />
           </FormLabel>
           {isCurrentStep && upload.is("complete") && (

@@ -1,1 +1,1 @@
-import "./events/onInstalled"
+import "./services/Bridge/register"
