@@ -11,6 +11,7 @@
   ],
   "ignorePatterns": [
     "dist/",
+    "functions/",
     "webpack.config.js"
   ],
   "parser": "@typescript-eslint/parser",

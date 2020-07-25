@@ -1,16 +1,16 @@
 import { Box, Heading, Stack, Text } from "@chakra-ui/core"
 import Hover from "~/src/@components/Hover"
+import * as Motion from "~/src/@components/Motion"
 import { Hello } from "~/src/@design/animations/Hello"
 import Sparkles from "~/src/@design/animations/Sparkles"
 import colors from "~/src/@design/colors"
-import * as Motion from "~/src/@design/Motion"
-import { ButtonLink } from "~/src/@design/Router"
+import { ButtonLink } from "~/src/@services/Router"
 import { Variants } from "framer-motion"
 import React from "react"
 
 export const Start = () => {
   const motion: Variants = {
-    initial: {
+    mount: {
       opacity: 0,
       y: 50,
     },
@@ -32,7 +32,7 @@ export const Start = () => {
       <Motion.Stack
         color="gold.700"
         spacing={4}
-        initial="initial"
+        initial="mount"
         animate="enter"
       >
         <Motion.Box variants={motion}>
@@ -50,7 +50,7 @@ export const Start = () => {
         </Motion.Box>
         <Motion.Box mt={4} variants={motion}>
           <Hover>
-            {(ref, hover) => (
+            {(ref, isHovered) => (
               <ButtonLink
                 to="/login"
                 ref={ref}
@@ -58,7 +58,7 @@ export const Start = () => {
                 variantColor="gold"
                 rightIcon="arrow-forward"
               >
-                <Sparkles color={colors.yellow[200]} enabled={hover}>
+                <Sparkles color={colors.yellow[200]} enabled={isHovered}>
                   Get Started
                 </Sparkles>
               </ButtonLink>

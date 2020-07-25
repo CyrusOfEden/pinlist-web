@@ -1,12 +1,15 @@
 import { Button, FormControl, Radio, RadioGroup, Stack } from "@chakra-ui/core"
-import * as Motion from "~/src/@design/Motion"
+import * as Motion from "~/src/@components/Motion"
 import React from "react"
 
-import { WindupFormLabel } from "./WindupFormLabel"
+import { WindupFieldHeader } from "./WindupFieldHeader"
 
 export const GenderField = ({ form, isCurrentStep, ...delegated }) => (
   <Motion.Box {...delegated}>
-    <WindupFormLabel title="How do you see yourself?" />
+    <WindupFieldHeader
+      title="How do you see yourself?"
+      earnedPoints={isCurrentStep ? 0 : 250}
+    />
     <Stack
       isInline
       spacing={8}

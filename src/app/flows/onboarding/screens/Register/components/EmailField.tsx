@@ -5,18 +5,21 @@ import {
   Input,
   Stack,
 } from "@chakra-ui/core"
-import * as Motion from "~/src/@design/Motion"
+import * as Motion from "~/src/@components/Motion"
 import { useFormField } from "~/src/@hooks/useFormField"
 import React from "react"
 
-import { WindupFormLabel } from "./WindupFormLabel"
+import { WindupFieldHeader } from "./WindupFieldHeader"
 
 export const EmailField = ({ form, isCurrentStep, ...delegated }) => {
   const { error } = useFormField(form, "email")
 
   return (
     <Motion.Box {...delegated}>
-      <WindupFormLabel title="What's your email?" />
+      <WindupFieldHeader
+        title="What's your email?"
+        earnedPoints={isCurrentStep ? 0 : 250}
+      />
       <Stack isInline>
         <FormControl isInvalid={error} w="100%">
           <Input

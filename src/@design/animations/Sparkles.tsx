@@ -1,7 +1,7 @@
 import { keyframes } from "@emotion/core"
 import styled from "@emotion/styled"
-import { useReduceMotion } from "~/src/@hooks/usePrefersReducedMotion"
 import { random, useRandomInterval } from "~/src/@hooks/useRandomInterval"
+import { useReduceMotion } from "~/src/@hooks/useReduceMotion"
 import React, { useState } from "react"
 
 const generateSparkle = (color: string) => {

@@ -1,5 +1,5 @@
+import { useTimeout } from "@chakra-ui/hooks"
 import { Global, css } from "@emotion/core"
-import { useDelay } from "~/src/@hooks/useDelay"
 import { useBoolean } from "ahooks"
 import classNames from "classnames"
 import React from "react"
@@ -8,7 +8,7 @@ import colors from "../colors"
 
 export const Hello: React.FC<{ animate?: boolean }> = ({ animate = true }) => {
   const [state, { setTrue }] = useBoolean(!animate)
-  useDelay(setTrue, 50, [])
+  useTimeout(setTrue, 50)
 
   return (
     <>

@@ -4,7 +4,7 @@ import React from "react"
 
 import theme from "./theme"
 
-const GlobalStyles = () => (
+export const GlobalStyles = () => (
   <Global
     styles={{
       body: {
@@ -17,7 +17,6 @@ const GlobalStyles = () => (
 export const ThemeProvider: React.FC = ({ children }) => (
   <ChakraThemeProvider theme={theme}>
     <CSSReset />
-    <GlobalStyles />
     {children}
   </ChakraThemeProvider>
 )
