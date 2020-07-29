@@ -16,7 +16,7 @@ const theme = {
   ...chakra,
   colors,
   fonts,
-  breakpoints: ["500px", "840px", "1280px"],
+  breakpoints: ["600px", "840px", "1280px", "1600px", "2160px"],
 }
 
 export default theme

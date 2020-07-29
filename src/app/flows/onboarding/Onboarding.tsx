@@ -1,8 +1,7 @@
 import { Box } from "@chakra-ui/core"
 import * as Motion from "~/src/@components/Motion"
 import { Route, Switch } from "~/src/@services/Router"
-import { useSession } from "~/src/@services/Session"
-import { SessionState } from "~/src/@services/Session"
+import { SessionState, useSession } from "~/src/@store"
 import React from "react"
 import { Redirect } from "react-router-dom"
 

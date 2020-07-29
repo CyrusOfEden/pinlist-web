@@ -1,44 +1,47 @@
 import "iframe-resizer/js/iframeResizer.contentWindow"
 
+import { unwrapResult } from "@reduxjs/toolkit"
 import { ThemeProvider } from "~/src/@design/ThemeProvider"
-import { createAPIv1Client } from "~/src/@services/APIv1"
-import { CurrentUser, SessionProvider } from "~/src/@services/Session"
+import * as Firebase from "~/src/@services/Firebase"
+import { configureAppStore } from "~/src/@store"
+import { mergeState, setCurrentUser } from "~/src/@store/reducers/sessionStore"
 import React from "react"
 import ReactDOM from "react-dom"
+import { Provider as StoreProvider } from "react-redux"
 import { BrowserRouter } from "react-router-dom"
 import { browser } from "webextension-polyfill-ts"
 
 import { Overlay } from "./Overlay"
 
-const loadSession = async (firebaseUser: firebase.User) => {
-  const {
-    firebaseToken = null,
-    currentUser = null,
-  } = await browser.storage.sync.get(["firebaseToken", "currentUser"])
-  const api = createAPIv1Client(firebaseToken)
-  return { firebaseUser, firebaseToken, currentUser, api }
+const store = configureAppStore()
+
+browser.storage.sync
+  .get(["firebaseToken", "firebaseUser", "currentUser"])
+  .then((session) => store.dispatch(mergeState(session)))
+
+Firebase.auth.onAuthStateChanged(async (firebaseUser) => {
+  const session = await store
+    .dispatch(setCurrentUser(firebaseUser))
+    .then(unwrapResult)
+  // Browser Storage
+  await browser.storage.sync.set(session)
+})
+
+const render = () => {
+  ReactDOM.render(
+    <ThemeProvider>
+      <StoreProvider store={store}>
+        <BrowserRouter>
+          <Overlay />
+        </BrowserRouter>
+      </StoreProvider>
+    </ThemeProvider>,
+    document.getElementById("root"),
+  )
 }
 
-const createSession = async (firebaseUser: firebase.User) => {
-  const firebaseToken = await firebaseUser.getIdToken()
-  const api = createAPIv1Client(firebaseToken)
-  const currentUser = await api<CurrentUser>({
-    method: "POST",
-    url: "/sessions",
-  })
-  browser.storage.sync.set({ firebaseToken, currentUser })
-  return { firebaseUser, firebaseToken, currentUser, api }
+if (process.env.NODE_ENV !== "production" && module.hot) {
+  module.hot.accept("./Overlay", render)
 }
 
-ReactDOM.render(
-  <ThemeProvider>
-    <BrowserRouter>
-      <SessionProvider
-        loadSession={loadSession}
-        createSession={createSession}
-        render={(session) => <Overlay session={session} />}
-      />
-    </BrowserRouter>
-  </ThemeProvider>,
-  document.getElementById("root"),
-)
+render()

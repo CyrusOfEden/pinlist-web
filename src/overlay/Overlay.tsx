@@ -1,12 +1,12 @@
 import * as ContentScript from "~/src/@services/actors/ContentScript"
-import { SessionState } from "~/src/@services/Session"
+import { SessionState } from "~/src/@store"
 import { useRequest } from "ahooks"
 import React from "react"
 import { useLocation } from "react-router-dom"
 
 import { NewPin } from "./flows/new-pin/NewPin"
 
-export const Overlay: React.FC<{ session: SessionState }> = ({ session }) => {
+export const Overlay = () => {
   const location = useLocation()
   const params = new URLSearchParams(location.search)
 

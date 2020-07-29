@@ -1,23 +1,17 @@
 import { FormControl } from "@chakra-ui/core"
+import { createSelector } from "@reduxjs/toolkit"
 import * as Select from "~/src/@components/Select"
-import { useSession } from "~/src/@services/Session"
+import { RootState, useAppSelector } from "~/src/@store"
+import { selectAll } from "~/src/@store/reducers/tagsStore"
 import { Tag } from "~/src/@types/pinlist-api"
-import { useRequest } from "ahooks"
 import React from "react"
 import { Controller } from "react-hook-form"
 
-export const TagsField = ({ form, ...props }) => {
-  const { currentUser, api } = useSession()
+export const TagsField = ({ form, autoFocus, ...props }) => {
+  const userTags = useAppSelector((state) => selectAll(state.tags))
+  const isLoading = useAppSelector((state) => state.tags.loading)
 
   const formatTag = (tag = "") => "#" + tag.trim().toLowerCase()
-
-  const { data: options, loading: isLoading } = useRequest(async () => {
-    const userTags: Tag[] = await api({
-      method: "GET",
-      url: `/users/${currentUser.id}/pin_tags`,
-    }).catch(() => [])
-    return userTags.map(Select.tagToOption)
-  })
 
   return (
     <FormControl w="100%" fontSize="md" {...props}>
@@ -26,7 +20,7 @@ export const TagsField = ({ form, ...props }) => {
         control={form.control}
         render={(props) => (
           <Select.Creatable
-            autoFocus
+            autoFocus={autoFocus}
             blurInputOnSelect={false}
             captureMenuScroll
             formatCreateLabel={formatTag}
@@ -37,7 +31,7 @@ export const TagsField = ({ form, ...props }) => {
             maxMenuHeight={120}
             menuPlacement="top"
             menuShouldScrollIntoView={false}
-            options={options}
+            options={userTags.map(Select.tagToOption)}
             placeholder="Tags"
             {...props}
           />
