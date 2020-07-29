@@ -29,7 +29,7 @@ export const SharePin: React.FC<{ pin: Pin }> = ({ pin }) => {
         </Heading>
       </Motion.Stack>
       <Motion.Stack spacing={4} isInline variants={motion}>
-        <Stack spacing={1} isInline flexWrap="wrap">
+        <Stack spacing={1} isInline flexWrap="wrap" w="80%">
           {pin.tags.map(({ id, name }) => (
             <Tag
               key={id}

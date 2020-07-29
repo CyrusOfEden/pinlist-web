@@ -1,8 +1,8 @@
 import { Heading, Input } from "@chakra-ui/core"
 import * as Motion from "~/src/@components/Motion"
 import { useFormStep } from "~/src/@hooks/useFormStep"
-import { useSession } from "~/src/@services/Session"
-import { CurrentUser } from "~/src/@services/Session"
+import { useSession } from "~/src/@store"
+import { User } from "~/src/@types/pinlist-api"
 import { Variants } from "framer-motion"
 import capitalize from "lodash/capitalize"
 import React from "react"
@@ -12,7 +12,6 @@ import { AvatarField } from "./components/AvatarField"
 import { EmailField } from "./components/EmailField"
 import { GenderField } from "./components/GenderField"
 import { UsernameField } from "./components/UsernameField"
-import { createUser } from "./createUser"
 
 export const Register = () => (
   <Motion.Stack
@@ -36,7 +35,7 @@ export const Register = () => (
 const RegistrationForm = () => {
   const session = useSession()
 
-  type FormValues = Omit<CurrentUser, "phoneNumber"> & { step: number }
+  type FormValues = Omit<User, "phoneNumber"> & { step: number }
   const form = useForm<FormValues>({
     mode: "onSubmit",
     defaultValues: {
@@ -56,9 +55,9 @@ const RegistrationForm = () => {
     }
 
     try {
-      const user = await createUser(session, values)
+      // const user = await createUser(session, values)
       debugger
-      session.setState({ currentUser: user })
+      // session.setState({ currentUser: user })
     } catch (errors) {
       debugger
       for (const [field, reason] of errors) {

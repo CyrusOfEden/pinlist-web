@@ -1,5 +1,5 @@
 import { Message } from "~/src/@services/actors/ContentScript"
-import { PinFormFields } from "~/src/overlay/flows/new-pin/screens/PinForm/PinForm"
+import { PinParams } from "~/src/@types/pinlist-api"
 import { iframeResizer } from "iframe-resizer"
 import camelCase from "lodash/camelCase"
 import { browser } from "webextension-polyfill-ts"
@@ -56,10 +56,9 @@ const unmountOverlay = () => {
 }
 
 const defaultPinAttributes = () => {
-  const data = {
+  const data: Partial<PinParams> = {
     siteName: location.hostname,
     title: document.title,
-    url: location.href,
   }
 
   document.querySelectorAll(`meta[property^="og:"]`).forEach((tag) => {
@@ -67,5 +66,7 @@ const defaultPinAttributes = () => {
     data[camelCase(property)] = tag.getAttribute("content")
   })
 
-  return data as PinFormFields
+  data.url = location.href
+
+  return data as PinParams
 }

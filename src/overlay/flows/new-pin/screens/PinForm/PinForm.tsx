@@ -6,8 +6,13 @@ import {
   Stack,
   useClipboard,
 } from "@chakra-ui/core"
-import { useSession } from "~/src/@services/Session"
-import { Pin } from "~/src/@types/pinlist-api"
+import { useAppDispatch, useSession } from "~/src/@store"
+import {
+  createPin,
+  deletePin,
+  updatePin,
+} from "~/src/@store/reducers/pinsStore"
+import { Pin, PinParams } from "~/src/@types/pinlist-api"
 import { setLastUsedTags } from "~/src/overlay/services/TagsCache"
 import React, { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
@@ -15,20 +20,15 @@ import { useForm } from "react-hook-form"
 import { TagsField } from "./components/TagsField"
 import { TitleField } from "./components/TitleField"
 
-export type PinFormFields = Pick<
-  Pin,
-  "id" | "title" | "url" | "siteName" | "image" | "description" | "tagOptions"
->
-
 type FormProps = {
-  pin: PinFormFields | Pin
+  pin: PinParams | Pin
   unmount: () => void
 }
 
 export const PinForm: React.FC<FormProps> = ({ pin, unmount }) => {
-  const { currentUser, api } = useSession()
+  const dispatch = useAppDispatch()
 
-  const form = useForm<PinFormFields>({
+  const form = useForm<PinParams>({
     mode: "onSubmit",
     defaultValues: pin,
   })
@@ -40,31 +40,24 @@ export const PinForm: React.FC<FormProps> = ({ pin, unmount }) => {
     "shareUrl" in pin ? pin.shareUrl : "",
   )
 
-  const onCancel = async () => {
+  const onDelete = async () => {
     if (pin.id) {
-      await api({ method: "DELETE", url: `/pins/${pin.id}/` })
+      await dispatch(deletePin(pin as Pin))
     }
-    unmount()
+    if (unmount) unmount()
   }
 
-  const onSubmit = useMemo(
-    () => async (values: PinFormFields) => {
-      const data = { pin: values }
-      setTimeout(unmount, 1000)
-      await Promise.all([
-        setLastUsedTags(values.tagOptions),
-        api<Pin>(
-          pin.id
-            ? { method: "PUT", url: `/pins/${pin.id}`, data }
-            : { method: "POST", url: `/users/${currentUser.id}/pins`, data },
-        ),
-      ])
+  const upsertPin = useMemo(
+    () => async (values: PinParams) => {
+      await dispatch((values.id ? updatePin : createPin)(values))
+      setLastUsedTags(values.tagOptions)
+      if (unmount) unmount()
     },
-    [pin.id, currentUser.id, unmount],
+    [unmount],
   )
 
   return (
-    <Stack spacing={3} as="form" onSubmit={form.handleSubmit(onSubmit)}>
+    <Stack spacing={3} as="form" onSubmit={form.handleSubmit(upsertPin)}>
       <Stack spacing={2}>
         <Stack isInline justify="space-between" align="center">
           <Heading size="xs" color="gold.300">
@@ -75,7 +68,7 @@ export const PinForm: React.FC<FormProps> = ({ pin, unmount }) => {
             size="xs"
             variant="outline"
             variantColor="pink"
-            onClick={onCancel}
+            onClick={onDelete}
           >
             Unpin
           </Button>
@@ -91,7 +84,7 @@ export const PinForm: React.FC<FormProps> = ({ pin, unmount }) => {
       </Stack>
 
       <Stack isInline spacing={4}>
-        <TagsField form={form} />
+        <TagsField form={form} autoFocus />
 
         <Button
           type="submit"

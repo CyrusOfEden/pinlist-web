@@ -1,10 +1,6 @@
 import colors from "~/src/@design/colors"
 import React, { forwardRef } from "react"
-import StateManager, {
-  OptionTypeBase as Option,
-  StylesConfig,
-  Theme,
-} from "react-select"
+import { OptionTypeBase as Option, StylesConfig, Theme } from "react-select"
 import AsyncCreatableSelect, {
   Props as AsyncCreatableProps,
 } from "react-select/async-creatable"

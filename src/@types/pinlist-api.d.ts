@@ -8,9 +8,19 @@ export type Tag = Timestamps & {
   name: string
 }
 
+export type User = {
+  id: number
+  username: string
+  email: string
+  phoneNumber: string
+  photoUrl: string
+  gender: string
+}
+
 export type TagOption = { value: string; label: string }
 
 export type Pin = Timestamps & {
+  archivedAt: string
   description: string
   id: number
   image: string
@@ -26,6 +36,11 @@ export type Pin = Timestamps & {
   viewedCount: number
 }
 
+export type PinParams = Pick<
+  Pin,
+  "id" | "title" | "url" | "siteName" | "image" | "description" | "tagOptions"
+>
+
 export type PagyMetadata = {
   count: number
   firstUrl: string
@@ -33,9 +48,11 @@ export type PagyMetadata = {
   items: number
   last: number
   lastUrl: string
+  next: number
   nextUrl: string
   page: number
   pageUrl: string
+  prev: number
   prevUrl: string
   scaffoldUrl: string
   series: string[]
