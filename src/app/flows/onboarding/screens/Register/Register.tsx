@@ -1,7 +1,8 @@
 import { Heading, Input } from "@chakra-ui/core"
 import * as Motion from "~/src/@components/Motion"
 import { useFormStep } from "~/src/@hooks/useFormStep"
-import { useSession } from "~/src/@store"
+import { useAppDispatch } from "~/src/@store"
+import { registerUser } from "~/src/@store/reducers/sessionStore"
 import { User } from "~/src/@types/pinlist-api"
 import { Variants } from "framer-motion"
 import capitalize from "lodash/capitalize"
@@ -32,10 +33,11 @@ export const Register = () => (
   </Motion.Stack>
 )
 
-const RegistrationForm = () => {
-  const session = useSession()
+type FormValues = Omit<User, "phoneNumber"> & { step: number }
 
-  type FormValues = Omit<User, "phoneNumber"> & { step: number }
+const RegistrationForm = () => {
+  const dispatch = useAppDispatch()
+
   const form = useForm<FormValues>({
     mode: "onSubmit",
     defaultValues: {
@@ -55,11 +57,8 @@ const RegistrationForm = () => {
     }
 
     try {
-      // const user = await createUser(session, values)
-      debugger
-      // session.setState({ currentUser: user })
+      await dispatch(registerUser(values))
     } catch (errors) {
-      debugger
       for (const [field, reason] of errors) {
         form.setError(field as keyof FormValues, {
           message: capitalize(`${field} ${reason}.`),

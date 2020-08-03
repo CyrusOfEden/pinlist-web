@@ -4,26 +4,45 @@ import { unwrapResult } from "@reduxjs/toolkit"
 import { ThemeProvider } from "~/src/@design/ThemeProvider"
 import * as Firebase from "~/src/@services/Firebase"
 import { configureAppStore } from "~/src/@store"
-import { mergeState, setCurrentUser } from "~/src/@store/reducers/sessionStore"
+import pins from "~/src/@store/reducers/pinsStore"
+import {
+  setCurrentUser,
+  setSessionState,
+} from "~/src/@store/reducers/sessionStore"
+import session from "~/src/@store/reducers/sessionStore"
+import tags from "~/src/@store/reducers/tagsStore"
 import React from "react"
 import ReactDOM from "react-dom"
-import { Provider as StoreProvider } from "react-redux"
+import { Provider as StoreProvider, batch } from "react-redux"
 import { BrowserRouter } from "react-router-dom"
 import { browser } from "webextension-polyfill-ts"
 
 import { Overlay } from "./Overlay"
+import overlay, { loadPinForTab, savePin } from "./reducers/overlayStore"
 
-const store = configureAppStore()
+const store = configureAppStore({ session, tags, pins, overlay })
 
-browser.storage.sync
-  .get(["firebaseToken", "firebaseUser", "currentUser"])
-  .then((session) => store.dispatch(mergeState(session)))
+const bootstrapOverlayState = async () => {
+  const session = await browser.storage.sync.get([
+    "firebaseToken",
+    "firebaseUser",
+    "currentUser",
+  ])
+  store.dispatch(setSessionState(session))
+
+  const params = new URLSearchParams(window.location.search)
+  const tabId = parseInt(params.get("tabId"))
+
+  await store.dispatch(loadPinForTab(tabId))
+  await store.dispatch(savePin())
+}
+
+bootstrapOverlayState()
 
 Firebase.auth.onAuthStateChanged(async (firebaseUser) => {
   const session = await store
     .dispatch(setCurrentUser(firebaseUser))
     .then(unwrapResult)
-  // Browser Storage
   await browser.storage.sync.set(session)
 })
 

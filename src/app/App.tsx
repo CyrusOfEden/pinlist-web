@@ -1,3 +1,4 @@
+import { LoadingScreen } from "~/src/@screens/LoadingScreen"
 import { Route, Switch } from "~/src/@services/Router"
 import { useSession } from "~/src/@store"
 import React from "react"
@@ -9,7 +10,9 @@ import { Pins } from "./flows/pins/Pins"
 export const App = () => {
   const session = useSession()
 
-  return isDoneOnboarding(session) ? (
+  return session.loading ? (
+    <LoadingScreen />
+  ) : isDoneOnboarding(session) ? (
     <Switch>
       <Route path="/pins" component={Pins} />
       <Redirect from="/" to="/pins" />

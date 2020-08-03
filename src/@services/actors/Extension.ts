@@ -5,5 +5,4 @@ type Authenticate = {
 
 export type Message = Authenticate
 
-export const call = (message: Message) =>
-  window.postMessage(message, window.origin)
+export const call = (message: Message) => parent.postMessage(message, "*")

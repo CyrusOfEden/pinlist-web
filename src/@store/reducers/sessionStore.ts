@@ -1,13 +1,43 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { createAPIv1Client } from "~/src/@services/APIv1"
+import * as Firebase from "~/src/@services/Firebase"
 import { User } from "~/src/@types/pinlist-api"
 
+import { RootState } from ".."
+
 export type SessionState = {
-  loading: boolean | null
+  loading: boolean
   firebaseUser: firebase.User | null
   firebaseToken: string | null
   currentUser: User | null
 }
+
+export const registerUser = createAsyncThunk(
+  "session/registerUser",
+  async (params: Partial<User>, { getState }) => {
+    const {
+      session: { firebaseToken },
+    } = getState() as RootState
+    const api = createAPIv1Client(firebaseToken)
+
+    const firebaseUser = Firebase.auth.currentUser
+
+    const currentUser = await api<User>({
+      method: "POST",
+      url: "/users",
+      data: { user: { phoneNumber: firebaseUser.phoneNumber, ...params } },
+    })
+
+    firebaseUser.updateEmail(currentUser.email)
+    firebaseUser.updateProfile({
+      displayName: currentUser.username,
+      photoURL: currentUser.photoUrl,
+    })
+    Firebase.analytics.setUserProperties(currentUser)
+
+    return { currentUser }
+  },
+)
 
 export const setCurrentUser = createAsyncThunk(
   "session/setFirebaseCurrentUser",
@@ -15,6 +45,7 @@ export const setCurrentUser = createAsyncThunk(
     if (user == null) {
       return null
     }
+
     const firebaseUser = user.toJSON()
     const firebaseToken = await user.getIdToken()
 
@@ -22,7 +53,7 @@ export const setCurrentUser = createAsyncThunk(
     const currentUser = await api<User>({
       method: "POST",
       url: "/sessions",
-    })
+    }).catch(() => ({}))
 
     return { firebaseUser, firebaseToken, currentUser }
   },
@@ -31,13 +62,13 @@ export const setCurrentUser = createAsyncThunk(
 const { reducer, actions } = createSlice({
   name: "session",
   initialState: {
-    loading: null,
+    loading: true,
     firebaseUser: null,
     firebaseToken: null,
     currentUser: null,
   } as SessionState,
   reducers: {
-    mergeState: (state, action) => {
+    setSessionState: (state, action) => {
       for (const [key, value] of Object.entries(action.payload)) {
         if (state[key] == null) {
           state[key] = value
@@ -47,20 +78,25 @@ const { reducer, actions } = createSlice({
   },
   extraReducers(builder) {
     builder
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(registerUser.fulfilled, (state, { payload }) => {
+        state.currentUser = payload.currentUser
+        state.loading = false
+      })
       .addCase(setCurrentUser.pending, (state) => {
         state.loading = true
       })
       .addCase(setCurrentUser.fulfilled, (state, { payload }) => {
+        state.firebaseUser = payload.firebaseUser as any
+        state.currentUser = payload.currentUser as any
+        state.firebaseToken = payload.firebaseToken
         state.loading = false
-        if (payload != null) {
-          for (const [key, value] of Object.entries(payload)) {
-            state[key] = value
-          }
-        }
       })
   },
 })
 
-export const { mergeState } = actions
+export const { setSessionState } = actions
 
 export default reducer
