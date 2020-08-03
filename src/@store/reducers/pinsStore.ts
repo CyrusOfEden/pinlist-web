@@ -1,40 +1,26 @@
 import {
-  SerializedError,
   createAsyncThunk,
   createEntityAdapter,
   createSlice,
 } from "@reduxjs/toolkit"
 import { createAPIv1Client } from "~/src/@services/APIv1"
 import {
+  Pin as ApiPin,
   Pagy,
   PagyMetadata,
-  Pin,
   PinParams,
-  Timestamps,
 } from "~/src/@types/pinlist-api"
 
 import { RootState } from "../"
+import * as requestState from "./requestState"
 
-const timestamps = (t = new Date()) => ({ updatedAt: t.toString() })
+export type Pin = ApiPin & requestState.Fields
 
-type RequestState = { error?: SerializedError; requestId?: string }
-const inProgress = (request: string) => ({
-  ...timestamps(),
-  error: undefined,
-  request,
+const pinsAdapter = createEntityAdapter<Pin>({
+  // Most recently created first
+  sortComparer: ({ createdAt: a }, { createdAt: b }) =>
+    new Date(b).getTime() - new Date(a).getTime(),
 })
-const succeeded = () => ({
-  ...timestamps(),
-  error: undefined,
-  request: undefined,
-})
-const failed = (error: SerializedError) => ({
-  ...timestamps(),
-  error,
-  request: undefined,
-})
-
-const pinsAdapter = createEntityAdapter<Pin & RequestState>()
 
 export const { selectAll, selectById } = pinsAdapter.getSelectors()
 
@@ -44,11 +30,25 @@ export type PinsState = ReturnType<typeof pinsAdapter.getInitialState> & {
 }
 
 // Actions
+export const upsertPin = createAsyncThunk(
+  "pins/upsertPin",
+  async (pin: PinParams, { getState }) => {
+    const { session } = getState() as RootState
+    const api = createAPIv1Client(session.firebaseToken)
+    const upsertedPin = await api<Pin>({
+      method: "POST",
+      url: `/pins`,
+      data: { pin },
+    })
+    return upsertedPin
+  },
+)
+
 export const loadPins = createAsyncThunk(
   "pins/load",
   async (page: number | "nextPage", { getState }) => {
     const {
-      session: { firebaseToken, currentUser },
+      session: { firebaseToken },
       pins: { metadata: pinsMetadata },
     } = getState() as RootState
 
@@ -59,25 +59,11 @@ export const loadPins = createAsyncThunk(
     const api = createAPIv1Client(firebaseToken)
     const { pins, metadata } = await api<Pagy<{ pins: Pin[] }>>({
       method: "GET",
-      url: `/users/${currentUser.id}/pins`,
+      url: `/pins`,
       params: { page },
     })
 
     return { pins, metadata }
-  },
-)
-
-export const createPin = createAsyncThunk(
-  "pins/create",
-  async (pin: PinParams, { getState }) => {
-    const { session } = getState() as RootState
-    const api = createAPIv1Client(session.firebaseToken)
-    const createdPin = await api<Pin>({
-      method: "POST",
-      url: `/users/${session.currentUser.id}/pins`,
-      data: { pin },
-    })
-    return createdPin
   },
 )
 
@@ -95,24 +81,11 @@ export const updatePin = createAsyncThunk(
   },
 )
 
-export const deletePin = createAsyncThunk(
-  "pins/delete",
-  async (pin: Pin, { getState }) => {
-    const { session } = getState() as RootState
-    const api = createAPIv1Client(session.firebaseToken)
-    const deletedPin = await api<Pin>({
-      method: "DELETE",
-      url: `/pins/${pin.id}`,
-      data: { pin },
-    })
-    return deletedPin
-  },
-)
-
 const { reducer, actions } = createSlice({
   name: "pins",
   initialState: pinsAdapter.getInitialState({
     metadata: {},
+    loading: null,
   }) as PinsState,
   reducers: {
     resetPins: pinsAdapter.removeAll,
@@ -128,59 +101,22 @@ const { reducer, actions } = createSlice({
         state.loading = false
       })
       .addCase(
-        createPin.pending,
-        (state, { meta: { arg: stubbedPin, requestId } }) => {
-          state.loading = true
-          const pin = {
-            ...stubbedPin,
-            ...inProgress(requestId),
-            archivedAt: null,
-          }
-          pinsAdapter.upsertOne(state, pin as any)
-        },
-      )
-      .addCase(createPin.fulfilled, (state, { payload: pin }) => {
-        pinsAdapter.upsertOne(state, pin)
-      })
-      .addCase(createPin.rejected, (state, { error, meta: { arg: pin } }) => {
-        pinsAdapter.updateOne(state, {
-          id: pin.id,
-          changes: failed(error),
-        })
-      })
-      .addCase(
         updatePin.pending,
         (state, { meta: { arg: pin, requestId } }) => {
           pinsAdapter.upsertOne(state, {
             ...pin,
-            ...inProgress(requestId),
+            ...requestState.inProgress(requestId),
           } as any)
         },
       )
       .addCase(updatePin.fulfilled, (state, { payload: pin }) => {
-        pinsAdapter.upsertOne(state, { ...pin, ...succeeded() })
+        pinsAdapter.upsertOne(state, { ...pin, ...requestState.succeeded() })
       })
       .addCase(updatePin.rejected, (state, { error, meta: { arg: pin } }) => {
         pinsAdapter.updateOne(state, {
           id: pin.id,
-          changes: failed(error),
+          changes: requestState.failed(error),
         } as any)
-      })
-      .addCase(
-        deletePin.pending,
-        (state, { meta: { arg: pin, requestId } }) => {
-          pinsAdapter.upsertOne(state, {
-            ...pin,
-            ...inProgress(requestId),
-            archivedAt: new Date().toString(),
-          })
-        },
-      )
-      .addCase(deletePin.rejected, (state, { error, meta: { arg: pin } }) => {
-        pinsAdapter.updateOne(state, {
-          id: pin.id,
-          changes: failed(error),
-        })
       })
   },
 })

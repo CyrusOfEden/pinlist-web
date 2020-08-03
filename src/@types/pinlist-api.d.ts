@@ -34,11 +34,21 @@ export type Pin = Timestamps & {
   url: string
   userId: number
   viewedCount: number
+  isStarred: boolean
+  notes: string
 }
 
 export type PinParams = Pick<
   Pin,
-  "id" | "title" | "url" | "siteName" | "image" | "description" | "tagOptions"
+  | "description"
+  | "id"
+  | "image"
+  | "isStarred"
+  | "notes"
+  | "siteName"
+  | "tagOptions"
+  | "title"
+  | "url"
 >
 
 export type PagyMetadata = {

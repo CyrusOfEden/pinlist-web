@@ -9,10 +9,10 @@ import { Tag } from "~/src/@types/pinlist-api"
 import { RootState } from "../"
 
 const tagsAdapter = createEntityAdapter<Tag>({
-  sortComparer({ updatedAt: a }, { updatedAt: b }) {
-    // Most recently updated first
-    return new Date(b).getTime() - new Date(a).getTime()
-  },
+  selectId: ({ name }) => name,
+  // Most recently updated first
+  sortComparer: ({ updatedAt: a }, { updatedAt: b }) =>
+    new Date(b).getTime() - new Date(a).getTime(),
 })
 
 export const { selectAll } = tagsAdapter.getSelectors()
@@ -24,25 +24,28 @@ export type TagsState = ReturnType<typeof tagsAdapter.getInitialState> & {
 // Actions
 export const loadTags = createAsyncThunk(
   "tags/load",
-  async (_, { getState }) => {
+  async (params: object, { getState }) => {
     const {
-      session: { firebaseToken, currentUser },
+      session: { firebaseToken },
     } = getState() as RootState
 
     const api = createAPIv1Client(firebaseToken)
     const tags = await api<Tag[]>({
       method: "GET",
-      url: `/users/${currentUser.id}/pin_tags`,
+      url: `/pin_tags`,
+      params: params ?? {},
     })
 
     return tags
   },
 )
 
-const { reducer } = createSlice({
+const { reducer, actions } = createSlice({
   name: "tags",
   initialState: tagsAdapter.getInitialState() as TagsState,
-  reducers: {},
+  reducers: {
+    upsertOne: tagsAdapter.upsertOne,
+  },
   extraReducers(builder) {
     builder
       .addCase(loadTags.pending, (state) => {
@@ -54,5 +57,7 @@ const { reducer } = createSlice({
       })
   },
 })
+
+export const { upsertOne } = actions
 
 export default reducer

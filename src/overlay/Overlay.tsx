@@ -1,22 +1,11 @@
-import * as ContentScript from "~/src/@services/actors/ContentScript"
-import { SessionState } from "~/src/@store"
-import { useRequest } from "ahooks"
+import { LoadingScreen } from "~/src/@screens/LoadingScreen"
+import { useAppSelector } from "~/src/@store"
 import React from "react"
-import { useLocation } from "react-router-dom"
 
 import { NewPin } from "./flows/new-pin/NewPin"
 
 export const Overlay = () => {
-  const location = useLocation()
-  const params = new URLSearchParams(location.search)
+  const isLoading = useAppSelector((state) => state.overlay.name === "mount")
 
-  const tabId = parseInt(params.get("tabId"))
-
-  const { data: defaultValues, loading: isLoadingDefaults } = useRequest(() =>
-    ContentScript.request(tabId, { name: "defaultPinAttributes" }),
-  )
-
-  return isLoadingDefaults ? null : (
-    <NewPin tabId={tabId} defaultValues={defaultValues} />
-  )
+  return isLoading ? <LoadingScreen /> : <NewPin />
 }

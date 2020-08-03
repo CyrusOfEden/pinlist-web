@@ -5,8 +5,8 @@ window.onload = () => {
     container.id = "pinlist-overlay-container"
     container.style.position = "fixed"
     container.style.zIndex = "2147483647"
-    container.style.top = "0"
-    container.style.right = "0"
+    container.style.top = "24px"
+    container.style.right = "24px"
     document.body.appendChild(container)
   }
 }

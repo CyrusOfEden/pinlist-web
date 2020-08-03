@@ -50,13 +50,14 @@ export const Start = () => {
         </Motion.Box>
         <Motion.Box mt={4} variants={motion}>
           <Hover>
-            {(ref, isHovered) => (
+            {(ref, isHovered, props) => (
               <ButtonLink
                 to="/login"
-                ref={ref}
                 size="lg"
                 variantColor="gold"
                 rightIcon="arrow-forward"
+                {...props}
+                ref={ref}
               >
                 <Sparkles color={colors.yellow[200]} enabled={isHovered}>
                   Get Started
