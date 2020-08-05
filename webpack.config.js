@@ -120,10 +120,11 @@ module.exports = {
       cleanStaleWebpackAssets: false,
     }),
     new HtmlWebpackPlugin({
-      template: path.join(sourcePath, "overlay.html"),
+      template: path.join(sourcePath, "overlay.ejs"),
       inject: "body",
       chunks: ["overlay"],
       filename: "overlay.html",
+      mode,
     }),
     // Write css files to the build folder
     new MiniCssExtractPlugin({ filename: "css/[name].css" }),

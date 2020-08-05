@@ -1,1 +1,3 @@
-import "./services/Bridge/register"
+import "./services/OverlayManager"
+import "./services/PageChannel"
+import "./services/RuntimePassthrough"

@@ -2,7 +2,6 @@ import "firebase/auth"
 import "firebase/messaging"
 import "firebase/storage"
 import "firebase/remote-config"
-import "firebase/analytics"
 import "firebase/functions"
 
 import firebase from "firebase/app"
@@ -21,9 +20,6 @@ export const app = firebase.initializeApp({
   appId: "1:261346201971:web:e25bade14ed5cc44eeb506",
   measurementId: "G-KB084NXVRP",
 })
-
-// Analytics
-export const analytics = firebase.analytics()
 
 // Storage
 export const storage = firebase.storage()
