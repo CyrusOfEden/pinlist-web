@@ -33,7 +33,6 @@ export const registerUser = createAsyncThunk(
       displayName: currentUser.username,
       photoURL: currentUser.photoUrl,
     })
-    Firebase.analytics.setUserProperties(currentUser)
 
     return { currentUser }
   },

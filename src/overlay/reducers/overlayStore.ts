@@ -50,7 +50,7 @@ export const closeOverlay = createAsyncThunk(
     } = getState() as RootState
     await Promise.all([
       browser.storage.sync.set({ lastUsedTagOptions }),
-      ContentScript.call(tabId, { name: "unmountOverlay", tabId }),
+      ContentScript.call(tabId, { name: "unmountOverlay" }),
     ])
   },
 )

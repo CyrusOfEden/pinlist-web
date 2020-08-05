@@ -5,9 +5,9 @@ type TabRef = Tabs.Tab | number
 const getTabId = (ref: TabRef): number =>
   typeof ref === "number" ? ref : ref.id
 
-type MountPinOverlay = { name: "mountOverlay"; tabId: number }
-type UnmountPinOverlay = { name: "unmountOverlay"; tabId: number }
-type GetDefaultPinAttributes = { name: "defaultPinAttributes" }
+export type MountPinOverlay = { name: "mountOverlay" }
+export type UnmountPinOverlay = { name: "unmountOverlay" }
+export type GetDefaultPinAttributes = { name: "defaultPinAttributes" }
 
 export type Message =
   | MountPinOverlay
