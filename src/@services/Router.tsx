@@ -12,9 +12,12 @@ import {
   LinkProps as RouterLinkProps,
   Switch as RouterSwitch,
   SwitchProps,
+  useLocation,
 } from "react-router-dom"
 
-export const Switch: React.FC = (props: SwitchProps) => (
+export { Route }
+
+export const Switch: React.FC<SwitchProps> = (props) => (
   <Route
     render={({ location }) => (
       <AnimatePresence exitBeforeEnter>
@@ -23,8 +26,6 @@ export const Switch: React.FC = (props: SwitchProps) => (
     )}
   />
 )
-
-export { Route }
 
 export type LinkProps = ChakraLinkProps & RouterLinkProps
 export const Link: React.FC<LinkProps> = React.forwardRef((props, ref) => (
@@ -35,3 +36,5 @@ export type ButtonLinkProps = ChakraButtonProps & RouterLinkProps
 export const ButtonLink: React.FC<ButtonLinkProps> = React.forwardRef(
   (props, ref) => <ChakraButton {...props} ref={ref} as={RouterLink as any} />,
 )
+
+export const useQuery = () => new URLSearchParams(useLocation().search)

@@ -1,6 +1,7 @@
 import {
   AspectRatioBox,
   Box,
+  BoxProps,
   Button,
   Icon,
   Image,
@@ -11,23 +12,31 @@ import Hover from "~/src/@components/Hover"
 import * as Motion from "~/src/@components/Motion"
 import { ButtonLink } from "~/src/@services/Router"
 import { useAppDispatch } from "~/src/@store"
-import { updatePin } from "~/src/@store/reducers/pinsStore"
+import { Pin, updatePin } from "~/src/@store/reducers/pinsStore"
+import { useBoolean } from "ahooks"
+import { MotionProps } from "framer-motion"
 import React, { useCallback } from "react"
 
-export const PinImage = ({ pin, inset = 5, ...delegated }) => {
+type Props = BoxProps & MotionProps & { pin: Pin; inset?: number }
+
+export const PinImage: React.FC<Props> = ({ pin, inset = 5, ...delegated }) => {
   const dispatch = useAppDispatch()
 
   const toggleStarred = useCallback(async () => {
-    await dispatch(updatePin({ ...pin, isStarred: !pin.isStarred }))
-  }, [pin.isStarred])
+    const { id } = pin
+    const isStarred = !pin.isStarred
+    await dispatch(updatePin({ id, isStarred }))
+  }, [pin.id, pin.isStarred])
 
-  const shareUrl = "shareUrl" in pin && pin.shareUrl
-  const { onCopy, hasCopied } = useClipboard(shareUrl)
+  const { onCopy, hasCopied } = useClipboard(pin.shareableUrl)
+
+  const [hasImageLoaded, { setTrue: imageHasLoaded }] = useBoolean(false)
 
   return (
     <Motion.Box
       {...delegated}
       bg="black"
+      animate={{ opacity: hasImageLoaded ? 1 : 0 }}
       position="relative"
       borderRadius={24}
       overflow="hidden"
@@ -38,6 +47,7 @@ export const PinImage = ({ pin, inset = 5, ...delegated }) => {
           size="100%"
           boxShadow="inner"
           objectFit="cover"
+          onLoad={imageHasLoaded}
           css={{
             maskMode: "luminance",
             maskImage:
@@ -57,6 +67,7 @@ export const PinImage = ({ pin, inset = 5, ...delegated }) => {
           >
             {pin.isStarred ? (
               <Button
+                id={`pin$${pin.id}$unstar`}
                 aria-label="Unstar Pin"
                 size="sm"
                 w="100%"
@@ -71,6 +82,7 @@ export const PinImage = ({ pin, inset = 5, ...delegated }) => {
               </Button>
             ) : (
               <Button
+                id={`pin$${pin.id}$star`}
                 aria-label="Star Pin"
                 size="sm"
                 w="100%"
@@ -100,6 +112,7 @@ export const PinImage = ({ pin, inset = 5, ...delegated }) => {
             {...props}
           >
             <Button
+              id={`pin$${pin.id}copyShareableLink`}
               aria-label="Share Link"
               size="sm"
               w="100%"
@@ -109,7 +122,6 @@ export const PinImage = ({ pin, inset = 5, ...delegated }) => {
               rounded="full"
               boxShadow="inner"
               _hover={{ boxShadow: "sm" }}
-              isLoading={shareUrl == null}
               onClick={onCopy}
             >
               {isMouseOverButton && (hasCopied ? "Copied!" : "Share")}
@@ -140,6 +152,7 @@ export const PinImage = ({ pin, inset = 5, ...delegated }) => {
               rel="noopen noreferer"
             >
               <Button
+                id={`pin$${pin.id}openOriginalLink`}
                 aria-label="Open Pinned Link"
                 size="sm"
                 w="100%"
@@ -166,6 +179,7 @@ export const PinImage = ({ pin, inset = 5, ...delegated }) => {
           bg="white"
           variant="ghost"
           variantColor="gray"
+          isDisabled
         >
           {pin.siteName.toLowerCase()}
         </ButtonLink>

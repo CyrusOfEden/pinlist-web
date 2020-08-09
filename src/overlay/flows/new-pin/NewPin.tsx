@@ -1,7 +1,7 @@
 import { useClipboard } from "@chakra-ui/core"
 import { useAppDispatch, useAppSelector } from "~/src/@store"
-import { Pin, PinParams } from "~/src/@types/pinlist-api"
-import { PinCard } from "~/src/app/flows/pins/components/PinCard"
+import { Pin } from "~/src/@types/pinlist-api"
+import { PinCard } from "~/src/app/flows/pin-wall/components/PinCard"
 import React, { useCallback } from "react"
 
 import { closeOverlay } from "../../reducers/overlayStore"
@@ -9,11 +9,11 @@ import { closeOverlay } from "../../reducers/overlayStore"
 export const NewPin = () => {
   const dispatch = useAppDispatch()
 
-  const pin = useAppSelector<Pin | PinParams>(
+  const pin = useAppSelector<Pin>(
     (state) => state.overlay.pin ?? state.overlay.pinParams,
   )
 
-  const { onCopy } = useClipboard((pin as Pin).shareUrl)
+  const { onCopy } = useClipboard(pin.shareableUrl)
 
   const handleSave = useCallback(() => {
     onCopy()
@@ -22,6 +22,7 @@ export const NewPin = () => {
 
   return (
     <PinCard
+      id={`pin$${pin.id}$create`}
       pin={pin}
       withImage={false}
       autoFocus="title"

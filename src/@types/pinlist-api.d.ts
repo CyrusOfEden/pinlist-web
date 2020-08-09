@@ -17,17 +17,18 @@ export type User = {
   gender: string
 }
 
-export type TagOption = { value: string; label: string }
+export type TagOption = {
+  value: string
+  label: string
+}
 
 export type Pin = Timestamps & {
   archivedAt: string
   description: string
   id: number
   image: string
-  shareUrl: string
   siteName: string
-  tagList: string[]
-  tags?: Tags[]
+  tags: Tags[]
   tagOptions: TagOption[]
   title: string
   token: string
@@ -36,6 +37,7 @@ export type Pin = Timestamps & {
   viewedCount: number
   isStarred: boolean
   notes: string
+  shareableUrl: string
 }
 
 export type PinParams = Pick<
@@ -70,3 +72,11 @@ export type PagyMetadata = {
 }
 
 export type Pagy<T> = T & { metadata: PagyMetadata }
+
+export type ShortenedURL = Timestamps & {
+  category?: string
+  shareableUrl: string
+  uniqueKey: string
+  url: string
+  useCount: number
+}

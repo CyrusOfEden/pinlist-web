@@ -6,20 +6,25 @@ import {
 } from "@reduxjs/toolkit"
 import { combineReducers } from "@reduxjs/toolkit"
 import { createAPIv1Client } from "~/src/@services/APIv1"
+import debounce from "lodash/debounce"
+import isEqual from "lodash/fp/isEqual"
 import { useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { batchedSubscribe } from "redux-batched-subscribe"
 
 import { SessionState } from "./reducers/sessionStore"
 
-export const configureAppStore = (
-  reducers: ReducersMapObject<any, any>,
-  loadInitialState?: () => DeepPartial<any>,
-) => {
+export const configureAppStore = (reducers: ReducersMapObject<any, any>) => {
   const reducer = combineReducers(reducers)
-  const preloadedState = loadInitialState ? loadInitialState() : {}
   const store = configureStore({
     reducer,
-    preloadedState,
+    enhancers: [
+      batchedSubscribe(
+        debounce((notify) => {
+          notify()
+        }, 100),
+      ),
+    ],
   })
 
   if (process.env.NODE_ENV !== "production" && module.hot) {
@@ -43,7 +48,7 @@ export const useAppSelector = <T>(
 export { SessionState }
 
 export const useSession = () =>
-  useAppSelector<SessionState>((state) => state.session)
+  useAppSelector<SessionState>((state) => state.session, isEqual)
 
 export const useAPI = () => {
   const { firebaseToken } = useSession()

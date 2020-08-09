@@ -4,13 +4,13 @@ import React from "react"
 import ReactDOM from "react-dom"
 import { browser } from "webextension-polyfill-ts"
 
-const containerId = "pinlist-overlay-container"
+const CONTAINER_ID = "pinlist-overlay-container"
 
-const getContainerElement = () => document.getElementById(containerId)
+const getContainerElement = () => document.getElementById(CONTAINER_ID)
 
 const createContainerElement = () => {
   const container = document.createElement("div")
-  container.id = containerId
+  container.id = CONTAINER_ID
   container.style.position = "fixed"
   container.style.zIndex = "2147483647"
   container.style.top = "24px"
@@ -38,10 +38,10 @@ const unmountOverlay = () => {
   ReactDOM.unmountComponentAtNode(getContainerElement())
 }
 
-browser.runtime.onMessage.addListener((message: Message, sender) => {
+browser.runtime.onMessage.addListener((message: Message) => {
   switch (message.name) {
     case "mountOverlay":
-      return mountOverlay(sender.tab.id)
+      return mountOverlay(message.tabId)
     case "unmountOverlay":
       return unmountOverlay()
   }

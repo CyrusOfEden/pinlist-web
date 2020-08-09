@@ -3,12 +3,17 @@ import { unwrapResult } from "@reduxjs/toolkit"
 import theme from "~/src/@design/theme"
 import { ThemeProvider } from "~/src/@design/ThemeProvider"
 import * as Extension from "~/src/@services/actors/Extension"
+import { Ahoy } from "~/src/@services/Ahoy"
 import * as Firebase from "~/src/@services/Firebase"
 import { SessionState, configureAppStore } from "~/src/@store"
 import pins from "~/src/@store/reducers/pinsStore"
-import { setCurrentUser } from "~/src/@store/reducers/sessionStore"
-import session from "~/src/@store/reducers/sessionStore"
+import {
+  serializeSession,
+  setCurrentFirebaseUser,
+} from "~/src/@store/reducers/sessionStore"
+import session, { setSessionState } from "~/src/@store/reducers/sessionStore"
 import tags from "~/src/@store/reducers/tagsStore"
+import { isEmpty } from "lodash/fp"
 import React from "react"
 import ReactDOM from "react-dom"
 import { Provider as StoreProvider } from "react-redux"
@@ -16,29 +21,38 @@ import { BrowserRouter } from "react-router-dom"
 
 import { App } from "./App"
 
-const store = configureAppStore({ session, pins, tags }, () => {
-  const session: Partial<SessionState> = JSON.parse(
-    localStorage.getItem("session") || "{}",
-  )
-  session.loading = !session.currentUser
-  return { session }
-})
+const store = configureAppStore({ session, pins, tags })
 
-Firebase.auth.onAuthStateChanged(async (firebaseUser) => {
+const localSession: Partial<SessionState> = JSON.parse(
+  localStorage.getItem("session") || "{}",
+)
+localSession.isLoading = isEmpty(localSession)
+store.dispatch(setSessionState(localSession))
+
+Firebase.auth.onAuthStateChanged(async (user) => {
   const session = await store
-    .dispatch(setCurrentUser(firebaseUser))
+    .dispatch(setCurrentFirebaseUser(user))
     .then(unwrapResult)
-  // Save in LocalStorage
-  localStorage.setItem("session", JSON.stringify(session || "{}"))
-  // Sync session with extension
-  const { data } = await Firebase.rpc("createAuthToken")()
-  Extension.call({ name: "authenticate", token: data })
+
+  if (session) {
+    // Save in LocalStorage
+    localStorage.setItem("session", serializeSession(session))
+    // Sync session with extension
+    const { data } = await Firebase.rpc("createAuthToken")()
+    Extension.call({ name: "authenticate", token: data })
+  }
 })
 
 const render = () => {
   ReactDOM.render(
     <ThemeProvider>
-      <Global styles={{ body: { background: theme.colors.gold[50] } }} />
+      <Global
+        styles={{
+          body: {
+            background: theme.colors.gold[50],
+          },
+        }}
+      />
       <StoreProvider store={store}>
         <BrowserRouter>
           <App />
