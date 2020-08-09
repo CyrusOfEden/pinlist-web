@@ -6,14 +6,14 @@ import * as Firebase from "~/src/@services/Firebase"
 import { configureAppStore } from "~/src/@store"
 import pins from "~/src/@store/reducers/pinsStore"
 import {
-  setCurrentUser,
+  setCurrentFirebaseUser,
   setSessionState,
 } from "~/src/@store/reducers/sessionStore"
 import session from "~/src/@store/reducers/sessionStore"
 import tags from "~/src/@store/reducers/tagsStore"
 import React from "react"
 import ReactDOM from "react-dom"
-import { Provider as StoreProvider, batch } from "react-redux"
+import { Provider as StoreProvider } from "react-redux"
 import { BrowserRouter } from "react-router-dom"
 import { browser } from "webextension-polyfill-ts"
 
@@ -41,7 +41,7 @@ bootstrapOverlayState()
 
 Firebase.auth.onAuthStateChanged(async (firebaseUser) => {
   const session = await store
-    .dispatch(setCurrentUser(firebaseUser))
+    .dispatch(setCurrentFirebaseUser(firebaseUser))
     .then(unwrapResult)
   await browser.storage.sync.set(session)
 })

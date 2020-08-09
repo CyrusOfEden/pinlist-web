@@ -9,7 +9,7 @@ export const NotesField = ({ form, ...props }) => {
     <FormControl w="100%" isInvalid={!!form.errors?.title?.message} {...props}>
       <Textfield
         name="notes"
-        placeholder="Start typing some notes..."
+        placeholder="Take some notes..."
         ref={form.register()}
         maxRows={8}
         variant="flushed"

@@ -7,7 +7,6 @@ import { Pin, updatePin } from "~/src/@store/reducers/pinsStore"
 import { PinParams } from "~/src/@types/pinlist-api"
 import { MotionProps } from "framer-motion"
 import identity from "lodash/identity"
-import isEqual from "lodash/isEqual"
 import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 
@@ -57,6 +56,7 @@ export const PinCard: React.FC<Props & StackProps & MotionProps> = ({
 
   return (
     <Motion.Stack
+      id={`pin$${pin.id}$update`}
       bg="white"
       boxShadow="sm"
       borderColor={pin.isStarred ? "gold.400" : "gray.50"}
@@ -72,7 +72,7 @@ export const PinCard: React.FC<Props & StackProps & MotionProps> = ({
     >
       {withImage && (
         <Box>
-          <PinImage pin={pin} />
+          <PinImage pin={pin as Pin} />
         </Box>
       )}
 

@@ -1,9 +1,4 @@
-import {
-  createAction,
-  createAsyncThunk,
-  createSlice,
-  unwrapResult,
-} from "@reduxjs/toolkit"
+import { createAsyncThunk, createSlice, unwrapResult } from "@reduxjs/toolkit"
 import * as ContentScript from "~/src/@services/actors/ContentScript"
 import { RootState } from "~/src/@store"
 import { updatePin, upsertPin } from "~/src/@store/reducers/pinsStore"
@@ -73,14 +68,10 @@ const { reducer } = createSlice({
         state.pin = payload
       })
       .addCase(updatePin.pending, (state, { meta: { arg: pinParams } }) => {
-        if (state.pin.id === pinParams.id) {
-          state.pin = { ...state.pin, ...pinParams }
-        }
+        state.pin = { ...state.pin, ...pinParams }
       })
       .addCase(updatePin.fulfilled, (state, { payload }) => {
-        if (state.pin.id === payload.id) {
-          state.pin = payload
-        }
+        state.pin = payload
       })
       .addCase(closeOverlay.pending, (state) => {
         state.name = "leave"

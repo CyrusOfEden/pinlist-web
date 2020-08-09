@@ -4,20 +4,24 @@ import { useSession } from "~/src/@store"
 import React from "react"
 import { Redirect } from "react-router-dom"
 
-import { Onboarding, isDoneOnboarding } from "./flows/onboarding/Onboarding"
-import { Pins } from "./flows/pins/Pins"
+import { Onboarding } from "./flows/onboarding/Onboarding"
+import { PinWall } from "./flows/pin-wall/PinWall"
 
 export const App = () => {
   const session = useSession()
 
-  return session.loading ? (
-    <LoadingScreen />
-  ) : isDoneOnboarding(session) ? (
+  if (session.isLoading) {
+    return <LoadingScreen />
+  }
+
+  if (!session.isDoneOnboarding) {
+    return <Onboarding {...session} />
+  }
+
+  return (
     <Switch>
-      <Route path="/pins" component={Pins} />
-      <Redirect from="/" to="/pins" />
+      <Route path="/wall" component={PinWall} />
+      <Redirect from="/" to="/wall" />
     </Switch>
-  ) : (
-    <Onboarding />
   )
 }
