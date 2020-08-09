@@ -3,8 +3,8 @@ import { unwrapResult } from "@reduxjs/toolkit"
 import theme from "~/src/@design/theme"
 import { ThemeProvider } from "~/src/@design/ThemeProvider"
 import * as Extension from "~/src/@services/actors/Extension"
-import { Ahoy } from "~/src/@services/Ahoy"
 import * as Firebase from "~/src/@services/Firebase"
+import { Router } from "~/src/@services/Router"
 import { SessionState, configureAppStore } from "~/src/@store"
 import pins from "~/src/@store/reducers/pinsStore"
 import {
@@ -17,7 +17,6 @@ import { isEmpty } from "lodash/fp"
 import React from "react"
 import ReactDOM from "react-dom"
 import { Provider as StoreProvider } from "react-redux"
-import { BrowserRouter } from "react-router-dom"
 
 import { App } from "./App"
 
@@ -54,9 +53,9 @@ const render = () => {
         }}
       />
       <StoreProvider store={store}>
-        <BrowserRouter>
+        <Router>
           <App />
-        </BrowserRouter>
+        </Router>
       </StoreProvider>
     </ThemeProvider>,
     document.getElementById("root"),

@@ -6,12 +6,12 @@ import { browser } from "webextension-polyfill-ts"
 const defaultPinAttributes = () => {
   const data: Partial<PinParams> = {
     siteName: location.hostname,
-    title: document.title,
+    title: document.title.trim(),
   }
 
   document.querySelectorAll(`meta[property^="og:"]`).forEach((tag) => {
     const property = tag.getAttribute("property").slice(3)
-    data[camelCase(property)] = tag.getAttribute("content")
+    data[camelCase(property)] = tag.getAttribute("content").trim()
   })
 
   data.url = location.href

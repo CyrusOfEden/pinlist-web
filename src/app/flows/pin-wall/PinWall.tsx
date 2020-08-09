@@ -1,88 +1,77 @@
-import { CircularProgress, Stack } from "@chakra-ui/core"
+import { CircularProgress, Input, Stack } from "@chakra-ui/core"
 import { Global, css } from "@emotion/core"
 import * as Motion from "~/src/@components/Motion"
 import { RainBros } from "~/src/@design/animations/RainBros"
 import { LoadingScreen } from "~/src/@screens/LoadingScreen"
 import { useAppDispatch, useAppSelector } from "~/src/@store"
-import {
-  loadPins,
-  selectAll,
-  selectWhereTaggedWith,
-} from "~/src/@store/reducers/pinsStore"
-import { Pin, TagOption } from "~/src/@types/pinlist-api"
-import { useWhyDidYouUpdate } from "ahooks"
+import { loadPins, resetPins, selectAll } from "~/src/@store/reducers/pinsStore"
+import { Pin } from "~/src/@types/pinlist-api"
 import { Variants } from "framer-motion"
-import flow from "lodash/fp/flow"
 import { Masonry, MasonryProps, useInfiniteLoader } from "masonic"
-import React, { useCallback, useEffect } from "react"
-import { useMemo } from "react"
-import { useHistory, useLocation } from "react-router-dom"
+import React, { useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { batch } from "react-redux"
+import { useQueryParam } from "use-query-params"
 import { Pause, WindupChildren } from "windups"
 
 import { PinCard as BasePinCard } from "./components/PinCard"
-import { TagsSearch } from "./components/TagsSearch"
 
 const PinCard: MasonryProps<Pin>["render"] = React.memo(({ data }) => (
   <BasePinCard pin={data} withImage={true} />
 ))
 
 export const PinWall = () => {
-  const { pathname, search } = useLocation()
-  const filterTags = useMemo(
-    () => new URLSearchParams(search).getAll("tags[]"),
-    [search],
-  )
+  const [search, setSearch] = useQueryParam<string>("search")
 
-  const history = useHistory()
-  const setFilterTags = (options: TagOption[]) => {
-    const params = new URLSearchParams(search)
-    params.delete("tags[]")
-    for (const { value } of options || []) {
-      params.append("tags[]", value)
-    }
-    history.push({ pathname, search: params.toString() })
-  }
+  const form = useForm({ defaultValues: { search } })
 
   const dispatch = useAppDispatch()
 
   const { pins, totalItems, isLoading } = useAppSelector(({ pins }) => ({
-    pins: flow(selectAll, selectWhereTaggedWith(filterTags))(pins) ?? [],
+    pins: selectAll(pins) ?? [],
     totalItems: pins.metadata?.count,
     isLoading: pins.isLoading,
   }))
 
-  const loadNextPage = useCallback(
-    async () => dispatch(loadPins({ tags: filterTags })),
-    [dispatch, filterTags],
-  )
-
-  useEffect(() => {
-    loadNextPage()
-  }, [filterTags])
+  const loadNextPage = () => dispatch(loadPins({ search }))
 
   const loadMorePins = useInfiniteLoader(loadNextPage, {
     totalItems,
     isItemLoaded: (index) => index < totalItems,
   })
 
-  const isFilteredByTags = filterTags.length !== 0
-  const noPins = pins.length === 0
+  useEffect(() => {
+    batch(() => {
+      dispatch(resetPins())
+      loadNextPage()
+    })
+  }, [search])
 
-  if (isLoading === null || (isLoading && noPins)) {
+  if (isLoading === null) {
     return <LoadingScreen />
-  }
-
-  if (!isLoading && !isFilteredByTags && noPins) {
-    return <EmptyState />
   }
 
   return (
     <Stack p={8} spacing={8}>
-      <Motion.Box w="60%" minW={320} maxW={800} mx="auto">
-        <TagsSearch
-          autoFocus={true}
-          defaultValue={filterTags.map((tag) => ({ label: tag, value: tag }))}
-          onChange={setFilterTags}
+      <Motion.Box
+        w="60%"
+        minW={320}
+        maxW={800}
+        mx="auto"
+        as="form"
+        onSubmit={form.handleSubmit(({ search: query }) => setSearch(query))}
+      >
+        <Input
+          variant="unstyled"
+          placeholder="Search"
+          fontFamily="heading"
+          fontSize="6xl"
+          fontStyle="italic"
+          fontWeight={300}
+          color="gold.700"
+          _placeholder={{ color: "gold.200" }}
+          name="search"
+          ref={form.register()}
         />
       </Motion.Box>
       <Motion.Box
@@ -112,14 +101,17 @@ export const PinWall = () => {
           render={PinCard}
         />
       </Motion.Box>
-      {isLoading && (
+      {isLoading ? (
         <CircularProgress
           isIndeterminate
           color="gold"
           trackColor="gold"
           mx="auto"
+          mt={8}
         />
-      )}
+      ) : pins.length === 0 ? (
+        <EmptyState />
+      ) : null}
     </Stack>
   )
 }
@@ -141,18 +133,17 @@ const EmptyState = ({ spacing = 4 }) => {
   )
 
   return (
-    <Motion.Box pt={16} maxW={800} m="auto" initial="mount" animate="enter">
+    <Motion.Box
+      w="100%"
+      maxW={800}
+      mt={8}
+      mx="auto"
+      initial="mount"
+      animate="enter"
+    >
       <WindupChildren>
-        <Motion.Heading color="gold.700" variants={motion}>
-          You're all set!
-        </Motion.Heading>
-        <Pause ms={500} />
         <Words>
           As you're browsing online, use Joyful to save products for later.
-        </Words>
-        <Pause ms={250} />
-        <Words>
-          And make sure to bookmark this page so you can come back to it!
         </Words>
         <Pause ms={1000} />
         <Words>PS. Enjoy this cute animation.</Words>

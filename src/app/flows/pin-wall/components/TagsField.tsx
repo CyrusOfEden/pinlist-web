@@ -47,17 +47,18 @@ export const TagsField: React.FC<Props> = ({
         control={form.control}
         render={(props) => (
           <AsyncCreatable
-            allowCreateWhileLoading={false}
+            allowCreateWhileLoading={true}
             blurInputOnSelect={false}
             captureMenuScroll={true}
+            createOptionPosition="first"
+            defaultOptions={loadedOptions}
+            filterOption={filterTagOptions}
             formatCreateLabel={formatTag}
             formatOptionLabel={({ value }) => formatTag(value)}
             isClearable={true}
             isMulti={true}
             loadOptions={loadOptions}
             maxMenuHeight={120}
-            defaultOptions={loadedOptions}
-            filterOption={filterTagOptions}
             menuShouldScrollIntoView={true}
             placeholder="Tags"
             styles={styles}
