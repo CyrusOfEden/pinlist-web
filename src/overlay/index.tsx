@@ -3,6 +3,7 @@ import "iframe-resizer/js/iframeResizer.contentWindow"
 import { unwrapResult } from "@reduxjs/toolkit"
 import { ThemeProvider } from "~/src/@design/ThemeProvider"
 import * as Firebase from "~/src/@services/Firebase"
+import { Router } from "~/src/@services/Router"
 import { configureAppStore } from "~/src/@store"
 import pins from "~/src/@store/reducers/pinsStore"
 import {
@@ -14,7 +15,6 @@ import tags from "~/src/@store/reducers/tagsStore"
 import React from "react"
 import ReactDOM from "react-dom"
 import { Provider as StoreProvider } from "react-redux"
-import { BrowserRouter } from "react-router-dom"
 import { browser } from "webextension-polyfill-ts"
 
 import { Overlay } from "./Overlay"
@@ -50,9 +50,9 @@ const render = () => {
   ReactDOM.render(
     <ThemeProvider>
       <StoreProvider store={store}>
-        <BrowserRouter>
+        <Router>
           <Overlay />
-        </BrowserRouter>
+        </Router>
       </StoreProvider>
     </ThemeProvider>,
     document.getElementById("root"),

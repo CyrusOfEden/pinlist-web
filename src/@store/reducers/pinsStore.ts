@@ -44,13 +44,14 @@ export const upsertPin = createAsyncThunk(
   },
 )
 
-type LoadParams = {
+export type LoadPinsParams = {
+  search?: string
   tags?: string[]
 }
 
 export const loadPins = createAsyncThunk(
   "pins/load",
-  async (params: LoadParams, { getState }) => {
+  async (params: LoadPinsParams, { getState }) => {
     const {
       pins: {
         metadata: { page = 1, last = 1 },

@@ -57,6 +57,7 @@
     "iframe-resizer-react": "^1.0.4",
     "lodash": "^4.17.15",
     "masonic": "^3.3.3",
+    "query-string": "^6.13.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.3",
@@ -75,6 +76,7 @@
     "redux-batched-subscribe": "^0.1.6",
     "styled-components": "^5.1.1",
     "use-double-click": "^1.0.5",
+    "use-query-params": "^1.1.6",
     "webext-base-css": "^1.1.0",
     "webextension-polyfill-ts": "^0.16.0",
     "windups": "^1.0.2"

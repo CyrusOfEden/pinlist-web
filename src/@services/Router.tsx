@@ -7,15 +7,26 @@ import {
 import { AnimatePresence } from "framer-motion"
 import React from "react"
 import {
+  BrowserRouter,
+  BrowserRouterProps,
   Route,
   Link as RouterLink,
   LinkProps as RouterLinkProps,
   Switch as RouterSwitch,
   SwitchProps,
-  useLocation,
 } from "react-router-dom"
+import { QueryParamProvider } from "use-query-params"
 
 export { Route }
+
+export const Router: React.FC<BrowserRouterProps> = ({
+  children,
+  ...props
+}) => (
+  <BrowserRouter {...props}>
+    <QueryParamProvider ReactRouterRoute={Route}>{children}</QueryParamProvider>
+  </BrowserRouter>
+)
 
 export const Switch: React.FC<SwitchProps> = (props) => (
   <Route
@@ -36,5 +47,3 @@ export type ButtonLinkProps = ChakraButtonProps & RouterLinkProps
 export const ButtonLink: React.FC<ButtonLinkProps> = React.forwardRef(
   (props, ref) => <ChakraButton {...props} ref={ref} as={RouterLink as any} />,
 )
-
-export const useQuery = () => new URLSearchParams(useLocation().search)

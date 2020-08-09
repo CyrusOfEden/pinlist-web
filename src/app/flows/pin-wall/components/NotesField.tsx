@@ -5,6 +5,7 @@ import React from "react"
 
 export const NotesField = ({ form, ...props }) => {
   const field = useFormField(form, "notes")
+
   return (
     <FormControl w="100%" isInvalid={!!form.errors?.title?.message} {...props}>
       <Textfield
