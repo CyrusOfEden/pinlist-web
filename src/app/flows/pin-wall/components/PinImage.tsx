@@ -172,16 +172,16 @@ export const PinImage: React.FC<Props> = ({ pin, inset = 5, ...delegated }) => {
       </Hover>
       <Box position="absolute" bottom={inset} left={inset}>
         <ButtonLink
-          to={{}}
+          to={`/wall?siteName=${pin.siteName}`}
           boxShadow="inner"
           rounded="full"
           size="sm"
           bg="white"
           variant="ghost"
           variantColor="gray"
-          isDisabled
+          pointerEvents="none"
         >
-          {pin.siteName.toLowerCase()}
+          {pin.siteName}
         </ButtonLink>
       </Box>
     </Motion.Box>

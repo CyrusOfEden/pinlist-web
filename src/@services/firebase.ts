@@ -1,5 +1,4 @@
 import "firebase/auth"
-import "firebase/messaging"
 import "firebase/storage"
 import "firebase/remote-config"
 import "firebase/functions"
@@ -11,14 +10,14 @@ export const client = firebase
 
 // App
 export const app = firebase.initializeApp({
-  apiKey: "AIzaSyB2vs-ui9JDaWO3B5APk-B7mTgq3-1ajcU",
-  authDomain: "volume-pinlist.firebaseapp.com",
-  databaseURL: "https://volume-pinlist.firebaseio.com",
-  projectId: "volume-pinlist",
-  storageBucket: "volume-pinlist.appspot.com",
-  messagingSenderId: "261346201971",
-  appId: "1:261346201971:web:e25bade14ed5cc44eeb506",
-  measurementId: "G-KB084NXVRP",
+  apiKey: "AIzaSyAs6kpld3Y98M12rf7bMsRjTkIWMm1Wvjw",
+  authDomain: "joyful-shopping.firebaseapp.com",
+  databaseURL: "https://joyful-shopping.firebaseio.com",
+  projectId: "joyful-shopping",
+  storageBucket: "joyful-shopping.appspot.com",
+  messagingSenderId: "82279655852",
+  appId: "1:82279655852:web:f084a3ec755e9bc6a03209",
+  measurementId: "G-52J4QQRL2B",
 })
 
 // Storage

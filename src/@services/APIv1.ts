@@ -45,7 +45,7 @@ const handleModelErrors = ({ data }: AxiosResponse) => {
 export const createAPIv1Client = (firebaseToken: string): APIv1 => {
   const client = axios.create({
     timeout: 5000,
-    baseURL: `${process.env.RAILS_HOST}/api/v1`,
+    baseURL: `${process.env.RAILS_HOST}/v1`,
     headers: {
       "content-type": "application/json",
       authorization: `Bearer ${firebaseToken}`,

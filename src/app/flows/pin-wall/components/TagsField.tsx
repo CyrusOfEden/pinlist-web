@@ -76,9 +76,6 @@ const { colors } = theme
 const borderRadius = 24
 
 export const styles: StylesConfig = {
-  container: (base) => ({
-    ...base,
-  }),
   control: (base, state) => ({
     ...base,
     borderWidth: 0,
@@ -116,7 +113,7 @@ export const styles: StylesConfig = {
     paddingBottom: 8,
     boxShadow: theme.shadows.xl,
     borderWidth: 2,
-    borderColor: theme.colors.gold[200],
+    borderColor: colors.gold[200],
   }),
   clearIndicator: (base) => ({ ...base, cursor: "pointer" }),
   indicatorSeparator: () => ({ display: "none" }),
