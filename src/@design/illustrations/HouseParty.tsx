@@ -4,25 +4,25 @@ import Image from "~/assets/illustrations/HouseParty.svg"
 import colors from "../colors"
 
 const HouseParty = styled(Image)`
-  .a {
+  .HouseParty_svg__a {
     fill: none;
   }
-  .b {
+  .HouseParty_svg__b {
     fill: ${colors.green.base};
   }
-  .c,
-  .e {
+  .HouseParty_svg__c,
+  .HouseParty_svg__e {
     fill: ${colors.gold.base};
   }
-  .d,
-  .h {
+  .HouseParty_svg__d,
+  .HouseParty_svg__h {
     fill: ${colors.peach.base};
   }
-  .f {
+  .HouseParty_svg__f {
     fill: ${colors.white};
   }
-  .g,
-  .i {
+  .HouseParty_svg__g,
+  .HouseParty_svg__i {
     fill: ${colors.pink.base};
   }
 `

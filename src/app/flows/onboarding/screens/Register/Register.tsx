@@ -1,8 +1,9 @@
 import { Heading, Input } from "@chakra-ui/core"
 import * as Motion from "~/src/@components/Motion"
 import { useFormStep } from "~/src/@hooks/useFormStep"
-import { useAppDispatch } from "~/src/@store"
-import { registerUser } from "~/src/@store/reducers/sessionStore"
+import { createAPIv1Client } from "~/src/@services/APIv1"
+import { useAppDispatch, useSession } from "~/src/@store"
+import { setSessionState } from "~/src/@store/reducers/sessionStore"
 import { User } from "~/src/@types/pinlist-api"
 import { Variants } from "framer-motion"
 import capitalize from "lodash/capitalize"
@@ -33,9 +34,13 @@ export const Register = () => (
   </Motion.Stack>
 )
 
-type FormValues = Omit<User, "phoneNumber"> & { step: number }
+type FormValues = User & { step: number }
 
 const RegistrationForm = () => {
+  const {
+    firebaseToken,
+    firebaseUser: { phoneNumber },
+  } = useSession()
   const dispatch = useAppDispatch()
 
   const form = useForm<FormValues>({
@@ -46,20 +51,27 @@ const RegistrationForm = () => {
       gender: "",
       username: "",
       photoUrl: "",
+      phoneNumber,
     },
   })
+
   const step = useFormStep(form)
-  const isLastStep = step === 3
 
   const onSubmit = async (values: FormValues) => {
-    if (!isLastStep) {
+    if (step < 3) {
       return form.setValue("step", step + 1)
     }
 
     try {
-      await dispatch(registerUser(values))
+      const api = createAPIv1Client(firebaseToken)
+      const currentUser = await api<User>({
+        method: "POST",
+        url: "/users",
+        data: { user: values },
+      })
+      dispatch(setSessionState({ currentUser }))
     } catch (errors) {
-      for (const [field, reason] of errors) {
+      for (const [field, reason] of Object.entries(errors)) {
         form.setError(field as keyof FormValues, {
           message: capitalize(`${field} ${reason}.`),
           type: "manual",
@@ -92,6 +104,7 @@ const RegistrationForm = () => {
       animate="enter"
     >
       <Input hidden name="step" ref={form.register()} />
+      <Input hidden name="phoneNumber" ref={form.register()} />
 
       {step >= 0 && (
         <EmailField form={form} isCurrentStep={step === 0} variants={motion} />

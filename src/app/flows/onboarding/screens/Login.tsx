@@ -1,7 +1,14 @@
 import * as Motion from "~/src/@components/Motion"
+import { LoadingScreen } from "~/src/@screens/LoadingScreen"
 import { auth, client } from "~/src/@services/Firebase"
 import React from "react"
-import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth"
+import Loadable from "react-loadable"
+
+const PhoneNumberLogin = Loadable({
+  loading: LoadingScreen,
+  loader: () => import("react-firebaseui/StyledFirebaseAuth"),
+  webpack: () => [require.resolveWeak("react-firebaseui/StyledFirebaseAuth")],
+})
 
 export const Login = () => (
   <Motion.Box
@@ -13,7 +20,7 @@ export const Login = () => (
       enter: { opacity: 1, y: 0, transition: { type: "spring" } },
     }}
   >
-    <StyledFirebaseAuth
+    <PhoneNumberLogin
       firebaseAuth={auth}
       uiConfig={{
         signInOptions: [client.auth.PhoneAuthProvider.PROVIDER_ID],

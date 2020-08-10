@@ -14,20 +14,23 @@ const ZipPlugin = require("zip-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const DotenvPlugin = require("dotenv-webpack")
 
-const mode = process.env.NODE_ENV || "development"
+const env = process.env.NODE_ENV || "development"
 
 const sourcePath = path.join(__dirname, "src")
-const distPath = path.join(__dirname, "dist", "extension")
-
-const targetBrowser = process.env.TARGET_BROWSER
-const targetBrowserExtensionFileType =
-  { opera: "crx", firefox: "xpi" }[targetBrowser] || "zip"
+const distPath = path.join(__dirname, "dist", "web")
 
 const { SourceMapDevToolPlugin, EnvironmentPlugin } = webpack
 
 module.exports = {
-  mode,
-  devtool: mode === "development" ? "inline-cheap-source-map" : false,
+  mode: env,
+  devtool: env === "development" ? "inline-cheap-source-map" : false,
+  devServer: {
+    contentBase: distPath,
+    historyApiFallback: true,
+    hot: true,
+    inline: true,
+    port: 1234,
+  },
   stats: {
     all: false,
     builtAt: true,
@@ -35,14 +38,12 @@ module.exports = {
     hash: true,
   },
   entry: {
-    manifest: path.join(sourcePath, "manifest.json"),
-    overlay: path.join(sourcePath, "overlay", "index.tsx"),
-    background: path.join(sourcePath, "background", "index.ts"),
-    contentScript: path.join(sourcePath, "content-script", "index.ts"),
+    app: path.join(sourcePath, "app", "App.tsx"),
   },
   output: {
-    path: path.join(distPath, targetBrowser),
-    filename: "dist/[name].bundle.js",
+    publicPath: "/",
+    path: distPath,
+    filename: "js/[name].bundle.js",
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"],
@@ -77,7 +78,7 @@ module.exports = {
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
-            options: { hmr: mode === "development" },
+            options: { hmr: env === "development" },
           },
           {
             loader: "css-loader",
@@ -106,42 +107,25 @@ module.exports = {
       measureCompilationTime: true,
     }),
     // environmental variables
-    new EnvironmentPlugin(["NODE_ENV", "TARGET_BROWSER"]),
-    new DotenvPlugin({ path: `./.env.${mode}`, expand: true }),
+    new EnvironmentPlugin(["NODE_ENV"]),
+    new DotenvPlugin({ path: `./.env.${env}`, expand: true }),
     // delete previous build files
     new CleanWebpackPlugin({
-      cleanOnceBeforeBuildPatterns: [
-        path.join(distPath, targetBrowser),
-        path.join(
-          distPath,
-          `${targetBrowser}.${targetBrowserExtensionFileType}`,
-        ),
-      ],
+      cleanOnceBeforeBuildPatterns: [distPath],
       cleanStaleWebpackAssets: false,
     }),
     new HtmlWebpackPlugin({
-      template: path.join(sourcePath, "overlay.ejs"),
+      template: path.join(sourcePath, "app.html"),
       inject: "body",
-      chunks: ["overlay"],
-      filename: "overlay.html",
-      mode,
+      chunks: ["app"],
+      filename: "index.html",
+      mode: env,
     }),
     // Write css files to the build folder
     new MiniCssExtractPlugin({ filename: "css/[name].css" }),
     // copy static assets
     new CopyWebpackPlugin([{ from: "assets", to: "assets" }]),
     // plugin to enable browser reloading in development mode
-    mode === "development"
-      ? new ExtensionReloader({
-          port: 9090,
-          reloadPage: true,
-          entries: {
-            contentScript: "content-script",
-            background: "background",
-            extensionPage: ["overlay"],
-          },
-        })
-      : { apply() {} },
   ],
   optimization: {
     minimizer: [
@@ -155,11 +139,6 @@ module.exports = {
         cssProcessorPluginOptions: {
           preset: ["default", { discardComments: { removeAll: true } }],
         },
-      }),
-      new ZipPlugin({
-        path: distPath,
-        extension: targetBrowserExtensionFileType,
-        filename: targetBrowser,
       }),
     ],
   },

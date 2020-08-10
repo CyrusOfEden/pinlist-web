@@ -9,7 +9,7 @@ const {
 
 admin.initializeApp({
   credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
-  databaseURL: "https://volume-pinlist.firebaseio.com",
+  databaseURL: "https://joyful-shopping.firebaseio.com",
 })
 
 export const createAuthToken = functions.https.onCall((_, context) =>

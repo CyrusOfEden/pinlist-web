@@ -15,5 +15,8 @@
   },
   "storage": {
     "rules": "firebase.storage"
+  },
+  "functions": {
+    "runtime": "nodejs10"
   }
 }
