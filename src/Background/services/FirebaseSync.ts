@@ -13,7 +13,7 @@ const synchronizeFirebaseUser = async (token: string) => {
   try {
     const { user } = await auth.signInWithCustomToken(token)
 
-    if (user.providerId !== auth.currentUser?.providerId) {
+    if (user.uid !== auth.currentUser?.uid) {
       await browser.notifications.create({
         type: "basic",
         iconUrl: user.photoURL,

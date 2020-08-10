@@ -4,11 +4,17 @@ import * as Motion from "~/src/@components/Motion"
 import { RainBros } from "~/src/@design/animations/RainBros"
 import { LoadingScreen } from "~/src/@screens/LoadingScreen"
 import { useAppDispatch, useAppSelector } from "~/src/@store"
-import { loadPins, resetPins, selectAll } from "~/src/@store/reducers/pinsStore"
+import {
+  LoadPinsParams,
+  loadPins,
+  resetPins,
+  selectAll,
+} from "~/src/@store/reducers/pinsStore"
 import { Pin } from "~/src/@types/pinlist-api"
+import { useMount } from "ahooks"
 import { Variants } from "framer-motion"
 import { Masonry, MasonryProps, useInfiniteLoader } from "masonic"
-import React, { useEffect } from "react"
+import React, { useCallback, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { batch } from "react-redux"
 import { useQueryParam } from "use-query-params"
@@ -33,19 +39,27 @@ export const PinWall = () => {
     isLoading: pins.isLoading,
   }))
 
-  const loadNextPage = () => dispatch(loadPins({ search }))
+  const load = async (params: LoadPinsParams) => {
+    await dispatch(loadPins(params))
+  }
 
-  const loadMorePins = useInfiniteLoader(loadNextPage, {
+  useMount(() => load({ search }))
+
+  const loadMorePins = useInfiniteLoader(async () => await load({ search }), {
     totalItems,
     isItemLoaded: (index) => index < totalItems,
   })
 
-  useEffect(() => {
-    batch(() => {
-      dispatch(resetPins())
-      loadNextPage()
-    })
-  }, [search])
+  const handleSubmit = useCallback(
+    async ({ search }) => {
+      setSearch(search)
+      batch(() => {
+        dispatch(resetPins())
+        load({ search })
+      })
+    },
+    [dispatch, setSearch],
+  )
 
   if (isLoading === null) {
     return <LoadingScreen />
@@ -59,7 +73,7 @@ export const PinWall = () => {
         maxW={800}
         mx="auto"
         as="form"
-        onSubmit={form.handleSubmit(({ search: query }) => setSearch(query))}
+        onSubmit={form.handleSubmit(handleSubmit)}
       >
         <Input
           variant="unstyled"

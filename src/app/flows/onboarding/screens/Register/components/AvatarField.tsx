@@ -10,6 +10,7 @@ import {
 import * as Motion from "~/src/@components/Motion"
 import { useFormField } from "~/src/@hooks/useFormField"
 import { storage } from "~/src/@services/Firebase"
+import { useSession } from "~/src/@store"
 import React, { useRef, useState } from "react"
 import FileUploader from "react-firebase-file-uploader"
 
@@ -28,6 +29,9 @@ const UploadState = (state: PhotoUploadState) => ({
 })
 
 export const AvatarField = ({ form, isCurrentStep, ...delegated }) => {
+  const {
+    firebaseUser: { uid: userId },
+  } = useSession()
   const [state, setState] = useState<PhotoUploadState>({ state: "mounted" })
 
   // State Derivations
@@ -40,7 +44,7 @@ export const AvatarField = ({ form, isCurrentStep, ...delegated }) => {
   const openFilepicker = () => label.current.click()
 
   // Uploader Options
-  const storageRef = storage.ref("avatars")
+  const storageRef = storage.ref(`avatars/${userId}`)
   const uploadStarted = () => setState({ state: "inProgress" })
   const uploadError = (error: Error) => setState({ state: "error", error })
   const uploadSuccess = async (filename: string) => {
@@ -94,6 +98,7 @@ export const AvatarField = ({ form, isCurrentStep, ...delegated }) => {
               onUploadStart={uploadStarted}
               onUploadError={uploadError}
               onUploadSuccess={uploadSuccess}
+              filename="avatar"
               metadata={{ cacheControl: "max-age=31536000, public" }}
             />
           </FormLabel>
