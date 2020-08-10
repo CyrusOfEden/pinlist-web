@@ -18,23 +18,6 @@ export type SessionState = {
   isDoneOnboarding: boolean | null
 }
 
-export const registerUser = createAsyncThunk(
-  "session/registerUser",
-  async (params: Partial<User>, { getState }) => {
-    const api = createAPIClient(getState())
-
-    const firebaseUser = Firebase.auth.currentUser
-
-    const currentUser = await api<User>({
-      method: "POST",
-      url: "/users",
-      data: { user: { phoneNumber: firebaseUser.phoneNumber, ...params } },
-    })
-
-    return { currentUser }
-  },
-)
-
 export const setCurrentFirebaseUser = createAsyncThunk(
   "session/setCurrentFirebaseUser",
   async (user?: firebase.User) => {
@@ -87,14 +70,6 @@ const { reducer } = createSlice({
       .addCase(setSessionState, (state, { payload }) => {
         assign(state, payload)
         assign(state, derivedState(state))
-      })
-      .addCase(registerUser.pending, (state) => {
-        state.isLoading = true
-      })
-      .addCase(registerUser.fulfilled, (state, { payload }) => {
-        state.currentUser = payload.currentUser
-        assign(state, derivedState(state))
-        state.isLoading = false
       })
       .addCase(setCurrentFirebaseUser.pending, (state) => {
         state.isLoading = !state.firebaseUser

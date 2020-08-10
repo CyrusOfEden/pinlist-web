@@ -44,7 +44,7 @@ export const AvatarField = ({ form, isCurrentStep, ...delegated }) => {
   const openFilepicker = () => label.current.click()
 
   // Uploader Options
-  const storageRef = storage.ref(`avatars/${userId}`)
+  const storageRef = storage.ref(`media/${userId}`)
   const uploadStarted = () => setState({ state: "inProgress" })
   const uploadError = (error: Error) => setState({ state: "error", error })
   const uploadSuccess = async (filename: string) => {
@@ -98,7 +98,6 @@ export const AvatarField = ({ form, isCurrentStep, ...delegated }) => {
               onUploadStart={uploadStarted}
               onUploadError={uploadError}
               onUploadSuccess={uploadSuccess}
-              filename="avatar"
               metadata={{ cacheControl: "max-age=31536000, public" }}
             />
           </FormLabel>

@@ -1,8 +1,17 @@
 import * as Motion from "~/src/@components/Motion"
-import HouseParty from "~/src/@design/illustrations/HouseParty"
+import { LoadingScreen } from "~/src/@screens/LoadingScreen"
 import { Variants } from "framer-motion"
 import React from "react"
+import Loadable from "react-loadable"
 import { useLocation } from "react-router-dom"
+
+const HouseParty = Loadable({
+  loading: LoadingScreen,
+  loader: () => import("~/src/@design/illustrations/HouseParty"),
+  webpack: () => [
+    require.resolveWeak("~/src/@design/illustrations/HouseParty"),
+  ],
+})
 
 export const Illustration = (delegated) => {
   const { pathname } = useLocation()
