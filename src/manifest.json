@@ -12,15 +12,11 @@
   },
   "permissions": [
     "activeTab",
-    "history",
+    "contextMenus",
     "notifications",
-    "storage",
-    "tabs",
-    "webNavigation",
-    "http://*/*",
-    "https://*/*"
+    "storage"
   ],
-  "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://www.googletagmanager.com http://localhost:8097/; object-src 'self';",
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://www.googletagmanager.com http://localhost:8097/; object-src 'self';",
   "__chrome|firefox__author": "volume",
   "__opera__developer": {
     "name": "volume"
@@ -45,7 +41,7 @@
   },
   "background": {
     "scripts": [
-      "dist/background.bundle.js"
+      "js/background.js"
     ],
     "__chrome|opera__persistent": true
   },
@@ -55,11 +51,11 @@
   "content_scripts": [
     {
       "matches": [
-        "http://*/*",
-        "https://*/*"
+        "http://localhost:1234/*",
+        "https://*.joyful.shopping/*"
       ],
       "js": [
-        "dist/contentScript.bundle.js"
+        "js/appBridge.js"
       ]
     }
   ]

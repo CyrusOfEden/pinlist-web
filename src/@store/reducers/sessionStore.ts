@@ -1,4 +1,4 @@
-import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { Ahoy } from "~/src/@services/Ahoy"
 import { createAPIv1Client } from "~/src/@services/APIv1"
 import * as Firebase from "~/src/@services/Firebase"
@@ -6,8 +6,6 @@ import { User } from "~/src/@types/pinlist-api"
 import assign from "lodash/assign"
 import flow from "lodash/fp/flow"
 import pick from "lodash/fp/pick"
-
-import { createAPIClient } from "./helpers"
 
 export type SessionState = {
   firebaseUser: firebase.User | null
@@ -18,40 +16,46 @@ export type SessionState = {
   isDoneOnboarding: boolean | null
 }
 
+export const loadSession = async (user?: firebase.User) => {
+  if (user == null) {
+    Ahoy.configure({ headers: {} })
+    return null
+  }
+
+  const firebaseUser = user.toJSON() as firebase.User
+  const firebaseToken = await user.getIdToken()
+
+  Ahoy.configure({
+    headers: { Authorization: `Bearer ${firebaseToken}` },
+  })
+
+  const api = createAPIv1Client(firebaseToken)
+  const currentUser: User | null = await api({
+    method: "POST",
+    url: "/sessions",
+  }).catch((error) => {
+    if ("currentUser" in error && error.currentUser === "not found") {
+      return null
+    } else {
+      throw error
+    }
+  })
+
+  return { firebaseUser, firebaseToken, currentUser }
+}
+
 export const setCurrentFirebaseUser = createAsyncThunk(
   "session/setCurrentFirebaseUser",
-  async (user?: firebase.User) => {
-    if (user == null) {
-      Ahoy.configure({ headers: {} })
-      return null
-    }
-
-    const firebaseUser = user.toJSON() as firebase.User
-    const firebaseToken = await user.getIdToken()
-
-    Ahoy.configure({
-      headers: { Authorization: `Bearer ${firebaseToken}` },
-    })
-
-    const api = createAPIv1Client(firebaseToken)
-    const currentUser: User | null = await api({
-      method: "POST",
-      url: "/sessions",
-    }).catch((error) => {
-      if ("currentUser" in error && error.currentUser === "not found") {
-        return null
-      } else {
-        throw error
-      }
-    })
-
-    return { firebaseUser, firebaseToken, currentUser }
-  },
+  loadSession,
 )
 
-export const setSessionState = createAction(
+export const setSessionState = createAsyncThunk(
   "session/setState",
-  (state: Partial<SessionState>) => ({ payload: state }),
+  async (state: Partial<SessionState>) => {
+    if (state.firebaseUser) {
+      await Firebase.auth.updateCurrentUser(state.firebaseUser)
+    }
+  },
 )
 
 const { reducer } = createSlice({
@@ -67,7 +71,7 @@ const { reducer } = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(setSessionState, (state, { payload }) => {
+      .addCase(setSessionState.pending, (state, { meta: { arg: payload } }) => {
         assign(state, payload)
         assign(state, derivedState(state))
       })

@@ -29,3 +29,5 @@ export const Onboarding: React.FC<SessionState> = ({ isLoggedIn }) => (
     <Illustration w={[280, 360, 420]} mt={12} />
   </Motion.Flex>
 )
+
+export default Onboarding

@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "~/src/@store"
 import { mapTagsToTagOptions, selectAll } from "~/src/@store/reducers/tagsStore"
 import { loadTags } from "~/src/@store/reducers/tagsStore"
 import { TagOption } from "~/src/@types/pinlist-api"
+import constant from "lodash/constant"
 import React from "react"
 import { Controller } from "react-hook-form"
 import { StylesConfig } from "react-select"
@@ -60,6 +61,7 @@ export const TagsField: React.FC<Props> = ({
             loadOptions={loadOptions}
             maxMenuHeight={120}
             menuShouldScrollIntoView={true}
+            noOptionsMessage={constant("No tags found")}
             placeholder="Tags"
             styles={styles}
             {...selectProps}

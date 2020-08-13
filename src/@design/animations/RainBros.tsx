@@ -595,3 +595,5 @@ const StyleSheet: React.FC = () => (
     `}
   />
 )
+
+export default RainBros

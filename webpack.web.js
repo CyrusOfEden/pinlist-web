@@ -23,7 +23,7 @@ const { SourceMapDevToolPlugin, EnvironmentPlugin } = webpack
 
 module.exports = {
   mode: env,
-  devtool: env === "development" ? "inline-cheap-source-map" : false,
+  devtool: env === "development" ? "eval-source-map" : false,
   devServer: {
     contentBase: distPath,
     historyApiFallback: true,
@@ -107,7 +107,7 @@ module.exports = {
       measureCompilationTime: true,
     }),
     // environmental variables
-    new EnvironmentPlugin(["NODE_ENV"]),
+    new EnvironmentPlugin(process.env),
     new DotenvPlugin({ path: `./.env.${env}`, expand: true }),
     // delete previous build files
     new CleanWebpackPlugin({
@@ -122,10 +122,9 @@ module.exports = {
       mode: env,
     }),
     // Write css files to the build folder
-    new MiniCssExtractPlugin({ filename: "css/[name].css" }),
+    // new MiniCssExtractPlugin({ filename: "css/[name].css" }),
     // copy static assets
     new CopyWebpackPlugin([{ from: "assets", to: "assets" }]),
-    // plugin to enable browser reloading in development mode
   ],
   optimization: {
     minimizer: [

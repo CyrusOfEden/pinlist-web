@@ -5,7 +5,7 @@ const {
   private_key: privateKey,
   client_email: clientEmail,
   project_id: projectId,
-} = require("./credential.json")
+} = require("../credentials.json")
 
 admin.initializeApp({
   credential: admin.credential.cert({ projectId, clientEmail, privateKey }),

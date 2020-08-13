@@ -17,7 +17,7 @@ const DotenvPlugin = require("dotenv-webpack")
 const env = process.env.NODE_ENV || "development"
 
 const sourcePath = path.join(__dirname, "src")
-const distPath = path.join(__dirname, "dist", "extension")
+const distPath = path.join(__dirname, "dist/extension")
 
 const targetBrowser = process.env.TARGET_BROWSER
 const targetBrowserExtensionFileType =
@@ -27,7 +27,7 @@ const { SourceMapDevToolPlugin, EnvironmentPlugin } = webpack
 
 module.exports = {
   mode: env,
-  devtool: env === "development" ? "inline-cheap-source-map" : false,
+  devtool: env === "development" ? "eval-source-map" : false,
   stats: {
     all: false,
     builtAt: true,
@@ -36,13 +36,18 @@ module.exports = {
   },
   entry: {
     manifest: path.join(sourcePath, "manifest.json"),
-    overlay: path.join(sourcePath, "overlay", "Overlay.tsx"),
-    background: path.join(sourcePath, "background", "Background.ts"),
-    contentScript: path.join(sourcePath, "content-script", "ContentScript.ts"),
+    overlay: path.join(sourcePath, "overlay/Overlay.tsx"),
+    background: path.join(sourcePath, "background/Background.ts"),
+    appBridge: path.join(sourcePath, "content-script/AppBridge.ts"),
+    "overlay.mount": path.join(sourcePath, "content-script/Overlay/mount.ts"),
+    "overlay.unmount": path.join(
+      sourcePath,
+      "content-script/Overlay/unmount.ts",
+    ),
   },
   output: {
     path: path.join(distPath, targetBrowser),
-    filename: "js/[name].bundle.js",
+    filename: "js/[name].js",
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"],
@@ -127,7 +132,7 @@ module.exports = {
       mode: env,
     }),
     // Write css files to the build folder
-    new MiniCssExtractPlugin({ filename: "css/[name].css" }),
+    // new MiniCssExtractPlugin({ filename: "css/[name].css" }),
     // copy static assets
     new CopyWebpackPlugin([{ from: "assets", to: "assets" }]),
     // plugin to enable browser reloading in development mode
@@ -136,9 +141,9 @@ module.exports = {
           port: 9090,
           reloadPage: true,
           entries: {
-            contentScript: "content-script",
+            manifest: "manifest",
+            overlay: "overlay",
             background: "background",
-            extensionPage: ["overlay"],
           },
         })
       : { apply() {} },

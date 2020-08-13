@@ -1,4 +1,4 @@
-import { Box, IconButton, StackProps } from "@chakra-ui/core"
+import { Box, IconButton, Stack, StackProps } from "@chakra-ui/core"
 import { unwrapResult } from "@reduxjs/toolkit"
 import * as Motion from "~/src/@components/Motion"
 import theme from "~/src/@design/theme"
@@ -10,6 +10,9 @@ import identity from "lodash/identity"
 import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 
+import { OpenPin } from "./buttons/OpenPin"
+import { SharePin } from "./buttons/SharePin"
+import { StarPin } from "./buttons/StarPin"
 import { NotesField } from "./NotesField"
 import { PinImage } from "./PinImage"
 import { TagsField } from "./TagsField"
@@ -22,11 +25,13 @@ interface Props {
   onSave?: (updatedPin: Pin) => unknown
   autoFocus?: "title" | "tags" | "notes"
   withImage?: boolean
+  withActions?: boolean
 }
 
 export const PinCard: React.FC<Props & StackProps & MotionProps> = ({
   pin,
   withImage,
+  withActions,
   autoFocus,
   inset = 5,
   showSubmitButton = false,
@@ -62,19 +67,45 @@ export const PinCard: React.FC<Props & StackProps & MotionProps> = ({
       borderColor={pin.isStarred ? "gold.400" : "gray.50"}
       borderWidth={4}
       borderRadius={32}
+      whileHover={{ boxShadow: theme.shadows.lg, y: -2 }}
       {...delegated}
       as="form"
       onSubmit={handleSubmit}
       p={inset}
       position="relative"
       spacing={3}
-      whileHover={{ boxShadow: theme.shadows.lg, y: -2 }}
     >
-      {withImage && (
-        <Box>
-          <PinImage pin={pin as Pin} />
+      {withImage && pin.image ? (
+        <Box position="relative">
+          <PinImage pin={pin as Pin} inset={inset} />
+          {withActions && (
+            <Stack
+              position="absolute"
+              top={inset}
+              right={inset}
+              spacing={inset}
+              borderRadius={32 - inset}
+              isInline
+              justify="flex-end"
+            >
+              <OpenPin pin={pin} />
+              <StarPin pin={pin} />
+              {"shareableUrl" in pin && <SharePin pin={pin} />}
+            </Stack>
+          )}
         </Box>
-      )}
+      ) : withActions ? (
+        <Stack
+          isInline
+          spacing={inset}
+          justify="flex-end"
+          borderRadius={32 - inset}
+        >
+          <OpenPin pin={pin} />
+          <StarPin pin={pin} />
+          {"shareableUrl" in pin && <SharePin pin={pin} />}
+        </Stack>
+      ) : null}
 
       <TitleField form={form} autoFocus={autoFocus === "title"} />
 
@@ -94,7 +125,6 @@ export const PinCard: React.FC<Props & StackProps & MotionProps> = ({
       >
         <IconButton
           aria-label="Save Changes"
-          boxShadow="xl"
           icon="check"
           rounded="full"
           size="lg"

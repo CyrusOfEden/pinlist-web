@@ -12,7 +12,7 @@ interface HoverProps {
 
 export default function Hover({
   children: render,
-  delay = 500,
+  delay = 600,
   ...delegated
 }: HoverProps) {
   const ref = useRef(null)
@@ -20,10 +20,13 @@ export default function Hover({
   const [state, setState] = useState(isHovering)
 
   useEffect(() => {
-    if (!delay || delay <= 0 || !isHovering) {
+    if (!delay || delay <= 0) {
       setState(isHovering)
     } else {
-      const timer = setTimeout(() => setState(isHovering), delay)
+      const timer = setTimeout(
+        () => setState(isHovering),
+        isHovering ? delay / 2 : delay,
+      )
       return () => clearTimeout(timer)
     }
   }, [delay, isHovering])

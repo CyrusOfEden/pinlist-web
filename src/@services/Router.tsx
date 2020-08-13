@@ -7,26 +7,14 @@ import {
 import { AnimatePresence } from "framer-motion"
 import React from "react"
 import {
-  BrowserRouter,
-  BrowserRouterProps,
   Route,
   Link as RouterLink,
   LinkProps as RouterLinkProps,
   Switch as RouterSwitch,
   SwitchProps,
 } from "react-router-dom"
-import { QueryParamProvider } from "use-query-params"
 
 export { Route }
-
-export const Router: React.FC<BrowserRouterProps> = ({
-  children,
-  ...props
-}) => (
-  <BrowserRouter {...props}>
-    <QueryParamProvider ReactRouterRoute={Route}>{children}</QueryParamProvider>
-  </BrowserRouter>
-)
 
 export const Switch: React.FC<SwitchProps> = (props) => (
   <Route
