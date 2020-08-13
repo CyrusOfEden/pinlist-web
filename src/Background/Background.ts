@@ -1,3 +1,3 @@
-import "./services/EventHandlers/browserAction.onClicked"
-import "./services/EventHandlers/runtime.onInstalled"
-import "./services/FirebaseSync"
+import "./event-handlers/overlayManager"
+import "./event-handlers/onInstallOrUpdate"
+import "./event-handlers/syncFirebaseAuth"

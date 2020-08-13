@@ -47,6 +47,7 @@ export const upsertPin = createAsyncThunk(
 export type LoadPinsParams = {
   search?: string
   tags?: string[]
+  page?: number
 }
 
 export const loadPins = createAsyncThunk(

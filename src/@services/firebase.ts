@@ -1,6 +1,5 @@
 import "firebase/auth"
 import "firebase/storage"
-import "firebase/remote-config"
 import "firebase/functions"
 
 import firebase from "firebase/app"
@@ -24,12 +23,12 @@ export const app = firebase.initializeApp({
 export const storage = firebase.storage()
 
 // Remote Config
-export const config = firebase.remoteConfig()
-config.defaultConfig = {}
-config.settings = {
-  fetchTimeoutMillis: 5 * 1000, // 5 seconds
-  minimumFetchIntervalMillis: 60 * 60 * 1000, // 1 hour
-}
+// export const config = firebase.remoteConfig()
+// config.defaultConfig = {}
+// config.settings = {
+//   fetchTimeoutMillis: 5 * 1000, // 5 seconds
+//   minimumFetchIntervalMillis: 60 * 60 * 1000, // 1 hour
+// }
 
 // Auth
 export const auth = firebase.auth()

@@ -1,7 +1,6 @@
 import { CircularProgress, Input, Stack } from "@chakra-ui/core"
 import { Global, css } from "@emotion/core"
 import * as Motion from "~/src/@components/Motion"
-import { RainBros } from "~/src/@design/animations/RainBros"
 import { LoadingScreen } from "~/src/@screens/LoadingScreen"
 import { useAppDispatch, useAppSelector } from "~/src/@store"
 import {
@@ -11,11 +10,12 @@ import {
   selectAll,
 } from "~/src/@store/reducers/pinsStore"
 import { Pin } from "~/src/@types/pinlist-api"
-import { useMount } from "ahooks"
+import { useRequest } from "ahooks"
 import { Variants } from "framer-motion"
 import { Masonry, MasonryProps, useInfiniteLoader } from "masonic"
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback } from "react"
 import { useForm } from "react-hook-form"
+import Loadable from "react-loadable"
 import { batch } from "react-redux"
 import { useQueryParam } from "use-query-params"
 import { Pause, WindupChildren } from "windups"
@@ -23,7 +23,7 @@ import { Pause, WindupChildren } from "windups"
 import { PinCard as BasePinCard } from "./components/PinCard"
 
 const PinCard: MasonryProps<Pin>["render"] = React.memo(({ data }) => (
-  <BasePinCard pin={data} withImage={true} />
+  <BasePinCard pin={data} withImage withActions />
 ))
 
 export const PinWall = () => {
@@ -43,9 +43,11 @@ export const PinWall = () => {
     await dispatch(loadPins(params))
   }
 
-  useMount(() => load({ search }))
+  useRequest(() => load({ search, page: 1 }), {
+    refreshOnWindowFocus: true,
+  })
 
-  const loadMorePins = useInfiniteLoader(async () => await load({ search }), {
+  const loadMorePins = useInfiniteLoader(() => load({ search }), {
     totalItems,
     isItemLoaded: (index) => index < totalItems,
   })
@@ -130,6 +132,12 @@ export const PinWall = () => {
   )
 }
 
+const RainBros = Loadable({
+  loading: LoadingScreen,
+  loader: () => import("~/src/@design/animations/RainBros"),
+  webpack: () => [require.resolveWeak("~/src/@design/animations/RainBros")],
+})
+
 const EmptyState = ({ spacing = 4 }) => {
   const motion: Variants = {
     mount: { opacity: 0, y: 20 },
@@ -169,3 +177,5 @@ const EmptyState = ({ spacing = 4 }) => {
     </Motion.Box>
   )
 }
+
+export default PinWall

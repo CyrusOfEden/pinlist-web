@@ -11,7 +11,8 @@
     "extension/": true,
     "**/node_modules/": true,
     "yarn.lock": true,
-    "functions/lib": true
+    "functions/lib": true,
+    ".firebase": true
   },
   "typescript.tsdk": "node_modules/typescript/lib"
 }

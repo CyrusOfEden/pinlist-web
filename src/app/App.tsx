@@ -3,12 +3,10 @@ import { unwrapResult } from "@reduxjs/toolkit"
 import theme from "~/src/@design/theme"
 import { ThemeProvider } from "~/src/@design/ThemeProvider"
 import { LoadingScreen } from "~/src/@screens/LoadingScreen"
-import * as Extension from "~/src/@services/actors/Extension"
+import * as Extension from "~/src/@services/Extension"
 import * as Firebase from "~/src/@services/Firebase"
 import { Route, Switch } from "~/src/@services/Router"
-import { Router } from "~/src/@services/Router"
-import { useSession } from "~/src/@store"
-import { configureAppStore } from "~/src/@store"
+import { configureAppStore, useSession } from "~/src/@store"
 import pins from "~/src/@store/reducers/pinsStore"
 import {
   SessionState,
@@ -20,11 +18,22 @@ import tags from "~/src/@store/reducers/tagsStore"
 import isEmpty from "lodash/isEmpty"
 import React from "react"
 import ReactDOM from "react-dom"
+import Loadable from "react-loadable"
 import { Provider as StoreProvider } from "react-redux"
-import { Redirect } from "react-router-dom"
+import { BrowserRouter, Redirect } from "react-router-dom"
+import { QueryParamProvider } from "use-query-params"
 
-import { Onboarding } from "./flows/onboarding/Onboarding"
-import { PinWall } from "./flows/pin-wall/PinWall"
+const PinWall = Loadable({
+  loading: LoadingScreen,
+  loader: () => import("./flows/pin-wall/PinWall"),
+  webpack: () => [require.resolveWeak("./flows/pin-wall/PinWall")],
+})
+
+const Onboarding = Loadable({
+  loading: LoadingScreen,
+  loader: () => import("./flows/onboarding/Onboarding"),
+  webpack: () => [require.resolveWeak("./flows/onboarding/Onboarding")],
+})
 
 const App = () => {
   const session = useSession()
@@ -54,9 +63,8 @@ localSession.isLoading = isEmpty(localSession)
 store.dispatch(setSessionState(localSession))
 
 Firebase.auth.onAuthStateChanged(async (user) => {
-  const session = await store
-    .dispatch(setCurrentFirebaseUser(user))
-    .then(unwrapResult)
+  const action = await store.dispatch(setCurrentFirebaseUser(user))
+  const session = unwrapResult(action)
 
   if (session) {
     // Save in LocalStorage
@@ -77,9 +85,11 @@ ReactDOM.render(
       }}
     />
     <StoreProvider store={store}>
-      <Router>
-        <App />
-      </Router>
+      <BrowserRouter>
+        <QueryParamProvider ReactRouterRoute={Route}>
+          <App />
+        </QueryParamProvider>
+      </BrowserRouter>
     </StoreProvider>
   </ThemeProvider>,
   document.getElementById("root"),
