@@ -62,6 +62,7 @@ export const PinCard: React.FC<Props & StackProps & MotionProps> = ({
   return (
     <Motion.Stack
       id={`pin$${pin.id}$update`}
+      p={inset}
       bg="white"
       boxShadow="sm"
       borderColor={pin.isStarred ? "gold.400" : "gray.50"}
@@ -71,11 +72,10 @@ export const PinCard: React.FC<Props & StackProps & MotionProps> = ({
       {...delegated}
       as="form"
       onSubmit={handleSubmit}
-      p={inset}
       position="relative"
       spacing={3}
     >
-      {withImage && pin.image ? (
+      {pin.image && withImage ? (
         <Box position="relative">
           <PinImage pin={pin as Pin} inset={inset} />
           {withActions && (

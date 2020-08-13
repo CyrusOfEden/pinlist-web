@@ -3,7 +3,6 @@ const path = require("path")
 const webpack = require("webpack")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const CopyWebpackPlugin = require("copy-webpack-plugin")
-const ExtensionReloader = require("webpack-extension-reloader")
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
@@ -50,9 +49,6 @@ module.exports = {
     plugins: [new TypescriptConfigPathsPlugin()],
     alias: {
       "^~/(.*)$": "src/$1",
-      "webextension-polyfill-ts": path.resolve(
-        path.join(__dirname, "node_modules", "webextension-polyfill-ts"),
-      ),
     },
   },
   module: {

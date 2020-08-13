@@ -34,7 +34,7 @@ export const SharePin: React.FC<Props> = ({ pin, ...delegated }) => {
             _hover={{ boxShadow: "sm" }}
             onClick={onCopy}
           >
-            {isMouseOverButton && (hasCopied ? "Copied!" : "Share")}
+            {isMouseOverButton && (hasCopied ? "Copied" : "Share")}
             <Icon
               name={hasCopied ? "check" : "external-link"}
               ml={isMouseOverButton ? 1 : -1}
