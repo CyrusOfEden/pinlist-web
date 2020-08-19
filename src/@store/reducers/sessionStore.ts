@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { Ahoy } from "~/src/@services/Ahoy"
 import { createAPIv1Client } from "~/src/@services/APIv1"
 import * as Firebase from "~/src/@services/Firebase"
+import { Honeybadger } from "~/src/@services/Honeybadger"
 import { User } from "~/src/@types/pinlist-api"
 import assign from "lodash/assign"
 import flow from "lodash/fp/flow"
@@ -19,6 +20,7 @@ export type SessionState = {
 export const loadSession = async (user?: firebase.User) => {
   if (user == null) {
     Ahoy.configure({ headers: {} })
+    Honeybadger.resetContext()
     return null
   }
 
@@ -27,6 +29,9 @@ export const loadSession = async (user?: firebase.User) => {
 
   Ahoy.configure({
     headers: { Authorization: `Bearer ${firebaseToken}` },
+  })
+  Honeybadger.setContext({
+    user_id: firebaseUser.uid,
   })
 
   const api = createAPIv1Client(firebaseToken)

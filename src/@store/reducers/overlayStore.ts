@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, unwrapResult } from "@reduxjs/toolkit"
+import { Honeybadger } from "~/src/@services/Honeybadger"
 import { RootState } from "~/src/@store"
 import { updatePin, upsertPin } from "~/src/@store/reducers/pinsStore"
 import { Pin, PinParams } from "~/src/@types/pinlist-api"
