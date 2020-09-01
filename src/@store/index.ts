@@ -4,12 +4,10 @@ import {
   configureStore,
 } from "@reduxjs/toolkit"
 import { combineReducers } from "@reduxjs/toolkit"
-import { createAPIv1Client } from "~/src/@services/APIv1"
 import { SessionState } from "~/src/@store/reducers/sessionStore"
 import { enableES5 } from "immer"
 import debounce from "lodash/debounce"
 import isEqual from "lodash/fp/isEqual"
-import { useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { batchedSubscribe } from "redux-batched-subscribe"
 
@@ -44,8 +42,3 @@ export const useAppSelector = <T>(
 
 export const useSession = () =>
   useAppSelector<SessionState>((state) => state.session, isEqual)
-
-export const useAPI = () => {
-  const { firebaseToken } = useSession()
-  return useMemo(() => createAPIv1Client(firebaseToken), [firebaseToken])
-}

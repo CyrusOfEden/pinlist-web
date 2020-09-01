@@ -34,7 +34,9 @@ export const storage = firebase.storage()
 export const auth = firebase.auth()
 
 // Functions
+export const functions = firebase.functions()
+
 if (process.env.NODE_ENV === "development") {
-  firebase.functions().useFunctionsEmulator("http://localhost:5001")
+  functions.useFunctionsEmulator("http://localhost:5001")
 }
-export const rpc = (name: string) => firebase.functions().httpsCallable(name)
+export const rpc = (name: string) => functions.httpsCallable(name)

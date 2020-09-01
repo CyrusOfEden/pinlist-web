@@ -59,8 +59,12 @@ const store = configureAppStore({ session, pins, tags })
 const localSession: Partial<SessionState> = JSON.parse(
   localStorage.getItem("session") || "{}",
 )
-localSession.isLoading = isEmpty(localSession)
 store.dispatch(setSessionState(localSession))
+
+Firebase.auth.onIdTokenChanged(async (user) => {
+  const firebaseToken = await user.getIdToken()
+  await store.dispatch(setSessionState({ firebaseToken }))
+})
 
 Firebase.auth.onAuthStateChanged(async (user) => {
   const action = await store.dispatch(setCurrentFirebaseUser(user))

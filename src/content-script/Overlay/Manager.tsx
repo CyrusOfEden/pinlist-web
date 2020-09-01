@@ -35,8 +35,11 @@ export const mount = () => {
   }
 
   document.querySelectorAll(`meta[property^="og:"]`).forEach((tag) => {
-    const property = tag.getAttribute("property").slice(3)
-    pinAttributes[camelCase(property)] = tag.getAttribute("content").trim()
+    const value = tag.getAttribute("content")
+    if (value) {
+      const property = tag.getAttribute("property").slice(3)
+      pinAttributes[camelCase(property)] = value.trim()
+    }
   })
 
   pinAttributes.url = location.href
@@ -54,8 +57,6 @@ export const mount = () => {
       frameBorder={0}
       sizeWidth
       sizeHeight
-      marginHeight={16}
-      marginWidth={8}
       src={QueryString.stringifyUrl({
         url: browser.extension.getURL("overlay.html"),
         query: pinAttributes,
