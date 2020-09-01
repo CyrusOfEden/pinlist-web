@@ -85,9 +85,8 @@ const { reducer } = createSlice({
       })
       .addCase(setCurrentFirebaseUser.fulfilled, (state, { payload }) => {
         if (payload != null) {
-          const { firebaseUser, firebaseToken, currentUser } = payload
+          const { firebaseUser, currentUser } = payload
           state.firebaseUser = firebaseUser
-          state.firebaseToken = firebaseToken
           state.currentUser = currentUser
           assign(state, derivedState(state))
         }
@@ -98,17 +97,22 @@ const { reducer } = createSlice({
 })
 
 export const serializeSession = flow(
-  pick(["firebaseUser", "firebaseToken", "currentUser"]),
+  pick(["firebaseUser", "currentUser"]),
   JSON.stringify,
 )
 
-const derivedState = ({ firebaseUser, currentUser }: SessionState) => ({
+const derivedState = ({
+  firebaseUser,
+  firebaseToken,
+  currentUser,
+}: SessionState) => ({
   isDoneOnboarding: !!(
     currentUser?.email &&
     currentUser?.username &&
     currentUser?.photoUrl
   ),
   isLoggedIn: !!firebaseUser,
+  isLoading: !firebaseToken,
 })
 
 export default reducer

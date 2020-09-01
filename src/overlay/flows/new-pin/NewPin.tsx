@@ -22,6 +22,8 @@ export const NewPin = () => {
 
   return (
     <PinCard
+      mx={4}
+      my={2}
       w={480}
       id={`pin$${pin.id}$create`}
       pin={pin}

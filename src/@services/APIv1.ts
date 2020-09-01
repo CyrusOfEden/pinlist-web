@@ -24,7 +24,6 @@ const handleExpiredToken = (client) => async (error) => {
       if (user) {
         const firebaseToken = await user.getIdToken()
         request.headers["authorization"] = `Bearer ${firebaseToken}`
-        request.headers["actually_ok"] = "yes"
         unsubscribe()
         client(request).then(resolve)
       }
@@ -54,9 +53,4 @@ export const createAPIv1Client = (firebaseToken: string): APIv1 => {
 
   return (request: AxiosRequestConfig) =>
     client(request).catch(handleExpiredToken(client)).then(handleModelErrors)
-}
-
-export const useAPI = () => {
-  const token = useAppSelector((state) => state.session.firebaseToken)
-  return useMemo(() => token && createAPIv1Client(token), [token])
 }

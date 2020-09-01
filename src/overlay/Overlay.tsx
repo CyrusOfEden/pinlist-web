@@ -45,18 +45,24 @@ const render = () => {
   )
 }
 
+Firebase.auth.onIdTokenChanged(async (user) => {
+  const firebaseToken = await user.getIdToken()
+  await store.dispatch(setSessionState({ firebaseToken }))
+})
+
 Firebase.auth.onAuthStateChanged(async (firebaseUser) => {
   const action = await store.dispatch(setCurrentFirebaseUser(firebaseUser))
   const session = unwrapResult(action)
+
   if (session != null) {
     await browser.storage.sync.set(session)
   }
 })
 
 const loadSession = async () =>
-  browser.storage.sync.get(["firebaseToken", "firebaseUser", "currentUser"])
+  browser.storage.sync.get(["firebaseUser", "currentUser"])
 
-const saga = async () => {
+;(async () => {
   await Promise.all([
     store.dispatch(setSessionState(await loadSession())),
     store.dispatch(loadPinForTab()),
@@ -65,9 +71,7 @@ const saga = async () => {
   render()
 
   await store.dispatch(savePin())
-}
-
-saga()
+})()
 
 if (process.env.NODE_ENV !== "production" && module.hot) {
   module.hot.accept("./flows", render)
