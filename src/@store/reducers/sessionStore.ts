@@ -5,7 +5,6 @@ import * as Firebase from "~/src/@services/Firebase"
 import { Honeybadger } from "~/src/@services/Honeybadger"
 import { User } from "~/src/@types/pinlist-api"
 import assign from "lodash/assign"
-import flow from "lodash/fp/flow"
 import pick from "lodash/fp/pick"
 
 export type SessionState = {
@@ -96,10 +95,7 @@ const { reducer } = createSlice({
   },
 })
 
-export const serializeSession = flow(
-  pick(["firebaseUser", "currentUser"]),
-  JSON.stringify,
-)
+export const serializeSession = pick(["firebaseUser", "currentUser"])
 
 const derivedState = ({
   firebaseUser,
