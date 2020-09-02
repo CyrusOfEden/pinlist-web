@@ -1,16 +1,15 @@
 import "iframe-resizer/js/iframeResizer.contentWindow"
 
+import { Global } from "@emotion/core"
 import { unwrapResult } from "@reduxjs/toolkit"
 import { ThemeProvider } from "~/src/@design/ThemeProvider"
 import { LoadingScreen } from "~/src/@screens/LoadingScreen"
 import * as Firebase from "~/src/@services/Firebase"
 import { configureAppStore, useAppSelector } from "~/src/@store"
-import overlay, {
-  loadPinForTab,
-  savePin,
-} from "~/src/@store/reducers/overlayStore"
+import overlay, { loadPinForTab } from "~/src/@store/reducers/overlayStore"
 import pins from "~/src/@store/reducers/pinsStore"
 import {
+  serializeSession,
   setCurrentFirebaseUser,
   setSessionState,
 } from "~/src/@store/reducers/sessionStore"
@@ -35,6 +34,13 @@ const store = configureAppStore({ session, tags, pins, overlay })
 const render = () => {
   ReactDOM.render(
     <ThemeProvider>
+      <Global
+        styles={{
+          body: {
+            marginBottom: 30,
+          },
+        }}
+      />
       <StoreProvider store={store}>
         <MemoryRouter>
           <Overlay />
@@ -46,8 +52,10 @@ const render = () => {
 }
 
 Firebase.auth.onIdTokenChanged(async (user) => {
-  const firebaseToken = await user.getIdToken()
-  await store.dispatch(setSessionState({ firebaseToken }))
+  if (user != null) {
+    const firebaseToken = await user.getIdToken()
+    await store.dispatch(setSessionState({ firebaseToken }))
+  }
 })
 
 Firebase.auth.onAuthStateChanged(async (firebaseUser) => {
@@ -55,22 +63,17 @@ Firebase.auth.onAuthStateChanged(async (firebaseUser) => {
   const session = unwrapResult(action)
 
   if (session != null) {
-    await browser.storage.sync.set(session)
+    await browser.storage.local.set(serializeSession(session))
   }
 })
-
-const loadSession = async () =>
-  browser.storage.sync.get(["firebaseUser", "currentUser"])
-
 ;(async () => {
-  await Promise.all([
-    store.dispatch(setSessionState(await loadSession())),
+  const [session] = await Promise.all([
+    browser.storage.local.get(["firebaseUser", "currentUser"]),
     store.dispatch(loadPinForTab()),
   ])
+  store.dispatch(setSessionState(session))
 
   render()
-
-  await store.dispatch(savePin())
 })()
 
 if (process.env.NODE_ENV !== "production" && module.hot) {

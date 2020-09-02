@@ -61,8 +61,8 @@ export const TagsField: React.FC<Props> = ({
             loadOptions={loadOptions}
             maxMenuHeight={120}
             menuShouldScrollIntoView={true}
-            noOptionsMessage={constant("No tags found")}
-            placeholder="Tags"
+            noOptionsMessage={constant("No collections found")}
+            placeholder="Collections"
             styles={styles}
             {...selectProps}
             {...props}

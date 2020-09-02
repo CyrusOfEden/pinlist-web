@@ -15,7 +15,6 @@ import {
 } from "~/src/@store/reducers/sessionStore"
 import session, { setSessionState } from "~/src/@store/reducers/sessionStore"
 import tags from "~/src/@store/reducers/tagsStore"
-import isEmpty from "lodash/isEmpty"
 import React from "react"
 import ReactDOM from "react-dom"
 import Loadable from "react-loadable"
@@ -62,17 +61,19 @@ const localSession: Partial<SessionState> = JSON.parse(
 store.dispatch(setSessionState(localSession))
 
 Firebase.auth.onIdTokenChanged(async (user) => {
-  const firebaseToken = await user.getIdToken()
-  await store.dispatch(setSessionState({ firebaseToken }))
+  if (user != null) {
+    const firebaseToken = await user.getIdToken()
+    await store.dispatch(setSessionState({ firebaseToken }))
+  }
 })
 
 Firebase.auth.onAuthStateChanged(async (user) => {
   const action = await store.dispatch(setCurrentFirebaseUser(user))
   const session = unwrapResult(action)
 
-  if (session) {
+  if (session != null) {
     // Save in LocalStorage
-    localStorage.setItem("session", serializeSession(session))
+    localStorage.setItem("session", JSON.stringify(serializeSession(session)))
     // Sync session with extension
     const { data } = await Firebase.rpc("createAuthToken")()
     Extension.call({ name: "authenticate", token: data })

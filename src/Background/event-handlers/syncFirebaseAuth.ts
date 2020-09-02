@@ -1,6 +1,9 @@
 import { Message } from "~/src/@services/Extension"
 import { auth } from "~/src/@services/Firebase"
-import { loadSession } from "~/src/@store/reducers/sessionStore"
+import {
+  loadSession,
+  serializeSession,
+} from "~/src/@store/reducers/sessionStore"
 import { browser } from "webextension-polyfill-ts"
 
 browser.runtime.onMessage.addListener(async (message: Message) => {
@@ -24,7 +27,7 @@ const synchronizeFirebaseUser = async (token: string) => {
     }
 
     const session = await loadSession(firebaseUser)
-    await browser.storage.sync.set(session)
+    await browser.storage.local.set(serializeSession(session))
   } catch (error) {
     await browser.notifications.create({
       type: "basic",

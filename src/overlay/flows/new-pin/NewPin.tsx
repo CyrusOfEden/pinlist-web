@@ -1,19 +1,27 @@
 import { useClipboard } from "@chakra-ui/core"
-import { useTimeout } from "@chakra-ui/hooks"
-import { useAppDispatch, useAppSelector } from "~/src/@store"
-import { unmountOverlay } from "~/src/@store/reducers/overlayStore"
+import { useAppDispatch, useAppSelector, useSession } from "~/src/@store"
+import { savePin, unmountOverlay } from "~/src/@store/reducers/overlayStore"
 import { Pin } from "~/src/@types/pinlist-api"
 import { PinCard } from "~/src/app/flows/pin-wall/components/PinCard"
-import React, { useCallback, useState } from "react"
+import { useMount } from "ahooks"
+import React, { useCallback, useEffect } from "react"
 
 export const NewPin = () => {
   const dispatch = useAppDispatch()
 
+  const { isLoading } = useSession()
+  const stateName = useAppSelector((state) => state.overlay.name)
   const pin = useAppSelector<Pin>(
     (state) => state.overlay.pin ?? state.overlay.pinParams,
   )
 
   const { onCopy } = useClipboard(pin.shareableUrl)
+
+  useEffect(() => {
+    if (!isLoading && stateName === "loaded") {
+      dispatch(savePin())
+    }
+  }, [isLoading, stateName])
 
   const handleSave = useCallback(() => {
     onCopy()
