@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector, useSession } from "~/src/@store"
 import { savePin, unmountOverlay } from "~/src/@store/reducers/overlayStore"
 import { Pin } from "~/src/@types/pinlist-api"
 import { PinCard } from "~/src/app/flows/pin-wall/components/PinCard"
-import { useMount } from "ahooks"
 import React, { useCallback, useEffect } from "react"
 
 export const NewPin = () => {

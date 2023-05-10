@@ -1,9 +1,7 @@
 import * as Firebase from "~/src/@services/Firebase"
-import { useAppSelector } from "~/src/@store"
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 import first from "lodash/first"
 import mapValues from "lodash/mapValues"
-import { useMemo } from "react"
 
 export type APIv1 = <T = any>(request: AxiosRequestConfig) => Promise<T>
 
